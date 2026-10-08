@@ -1,15 +1,29 @@
 const BASE = 'https://www.fueleconomy.gov/ws/rest';
 const TIMEOUT_MS = 8000;
+const cache = new Map();
 
-async function get(path, params = {}, f = fetch) {
-  const query = new URLSearchParams(params).toString();
-  const url = `${BASE}/${path}${query ? `?${query}` : ''}`;
+async function request(url, f) {
   const res = await f(url, {
     headers: { Accept: 'application/json' },
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });
   if (!res.ok) throw new Error(`EPA lookup failed (${res.status})`);
   return res.json();
+}
+
+// Real requests are cached by URL so a repeat pick is instant. A caller that
+// passes its own fetch (the tests) always goes through to that fetch.
+function get(path, params = {}, f) {
+  const query = new URLSearchParams(params).toString();
+  const url = `${BASE}/${path}${query ? `?${query}` : ''}`;
+  if (f) return request(url, f);
+  if (!cache.has(url)) {
+    cache.set(url, request(url, fetch).catch((err) => {
+      cache.delete(url);
+      throw err;
+    }));
+  }
+  return cache.get(url);
 }
 
 export function asMenu(raw) {

@@ -1,9 +1,9 @@
-import { compare, validate } from './calc.js';
+import { compare, validate, n } from './calc.js';
 import { getYears, getMakes, getModels, getOptions, getVehicle } from './epa.js';
 import { estimateTotal, powertrainOf } from './maintenance.js';
 import { TOTALS } from './maintenance-rates.js';
 import { readInput } from './form.js';
-import { renderResult, renderErrors } from './render.js';
+import { renderResult, renderErrors, money } from './render.js';
 import { evFieldset, carFieldset } from './templates.js';
 
 const form = document.querySelector('#calc');
@@ -12,9 +12,10 @@ const workingEl = document.querySelector('#working');
 const peekEl = document.querySelector('#peek');
 const announceEl = document.querySelector('#announce');
 const PICKERS = ['ev', 'car0', 'car1'];
+const LEVELS = ['year', 'make', 'model', 'option'];
 const ANNOUNCE_DELAY_MS = 700;
 const vehicles = {};
-const requests = { ev: 0, car0: 0, car1: 0 };
+const requests = Object.fromEntries(PICKERS.map((p) => [p, 0]));
 const lookupDown = 'Could not reach the EPA lookup. Type the numbers instead.';
 
 const field = (p, name) => form.elements[`${p}_${name}`];
@@ -49,10 +50,10 @@ function showTotalHint(p) {
   const hint = estimateTotal(TOTALS, {
     powertrain: p === 'ev' ? 'ev' : powertrainOf(v.atvType),
     age: v ? new Date().getFullYear() - v.year : 0,
-    annualMiles: Number(form.elements.annualMiles.value) || 0,
+    annualMiles: n(form.elements.annualMiles.value),
   });
   el.textContent = hint
-    ? `Published estimate for a car like this: about $${Math.round(hint.perYear).toLocaleString('en-US')} a year for maintenance and repairs together. Enter your own split below. ${hint.note} Source: ${hint.source}.`
+    ? `Published estimate for a car like this: about ${money.format(hint.perYear)} a year for maintenance and repairs together. Enter your own split below. ${hint.note} Source: ${hint.source}.`
     : '';
 }
 
@@ -64,11 +65,12 @@ function clearVehicle(p, text = '') {
   recompute();
 }
 
+const efficiencyOf = (p, v) => (p === 'ev' ? v.kwhPer100 : v.mpg);
+
 function refuse(p, v) {
   if (p === 'ev' && !v.isEV) return 'That one is not an EV. Pick an electric model.';
   if (p !== 'ev' && v.isEV) return 'That one is an EV. Pick a gas car here, and the EV in the EV section.';
-  const eff = p === 'ev' ? v.kwhPer100 : v.mpg;
-  return eff > 0 ? '' : 'The EPA has no efficiency figure for this one. Type your own below.';
+  return efficiencyOf(p, v) > 0 ? '' : 'The EPA has no efficiency figure for this one. Type your own below.';
 }
 
 async function applyVehicle(p, id, token) {
@@ -78,8 +80,8 @@ async function applyVehicle(p, id, token) {
     const refusal = refuse(p, v);
     if (refusal) return clearVehicle(p, refusal);
     vehicles[p] = v;
-    field(p, 'eff').value = p === 'ev' ? v.kwhPer100 : v.mpg;
-    message(p, p !== 'ev' && /hybrid/i.test(v.atvType) ? 'Hybrid or plug-in: check the mpg is right for how you drive it.' : '');
+    field(p, 'eff').value = efficiencyOf(p, v);
+    message(p, powertrainOf(v.atvType) === 'hybrid' ? 'Hybrid or plug-in: check the mpg is right for how you drive it.' : '');
     showTotalHint(p);
     recompute();
   } catch {
@@ -89,7 +91,7 @@ async function applyVehicle(p, id, token) {
 
 async function cascade(p, level) {
   const token = ++requests[p];
-  const [y, mk, md, op] = ['year', 'make', 'model', 'option'].map((k) => field(p, k));
+  const [y, mk, md, op] = LEVELS.map((k) => field(p, k));
   if (vehicles[p]) clearVehicle(p); else message(p, '');
   try {
     if (level === 'year') {
@@ -115,7 +117,7 @@ async function cascade(p, level) {
 }
 
 function wirePicker(p) {
-  for (const level of ['year', 'make', 'model', 'option']) {
+  for (const level of LEVELS) {
     field(p, level).addEventListener('change', () => cascade(p, level));
   }
 }
@@ -126,11 +128,15 @@ function toggleHidden(selector, hidden) {
 }
 
 function splitMilesBetweenTwoCars(two) {
-  if (two && !field('car1', 'share').value) {
-    field('car0', 'share').value = 50;
-    field('car1', 'share').value = 50;
+  const [first, second] = [field('car0', 'share'), field('car1', 'share')];
+  if (two && !second.value) {
+    first.value = 50;
+    second.value = 50;
   }
-  if (!two && Number(field('car0', 'share').value) === 50) field('car0', 'share').value = 100;
+  if (!two && Number(first.value) === 50) {
+    first.value = 100;
+    second.value = '';
+  }
 }
 
 function wireToggles() {
@@ -140,13 +146,11 @@ function wireToggles() {
       const p = t.name.replace('_mode', '');
       form.querySelectorAll(`[data-for="${p}"]`).forEach((el) => { el.hidden = el.dataset.mode !== t.value; });
     }
-    if (t.name.endsWith('_sellOn')) toggleHidden(`[data-sale="${t.name.replace('_sellOn', '')}"]`, !t.checked);
+    if (t.dataset.reveals) toggleHidden(t.dataset.reveals, !t.checked);
     if (t.name === 'car1_on') {
-      toggleHidden('[data-second]', !t.checked);
       splitMilesBetweenTwoCars(t.checked);
+      recompute();
     }
-    if (t.name === 'free_on') toggleHidden('[data-free]', !t.checked);
-    if (t.name === 'charger_on') toggleHidden('[data-charger]', !t.checked);
   });
 }
 
@@ -155,7 +159,6 @@ function wireInputs() {
     if (e.target.name === 'annualMiles') PICKERS.forEach(showTotalHint);
     recompute();
   });
-  form.addEventListener('change', recompute);
 }
 
 function wirePeek() {

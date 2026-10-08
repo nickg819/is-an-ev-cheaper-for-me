@@ -52,7 +52,7 @@
         <section id="panel-ev" class="tabpanel" role="tabpanel" aria-labelledby="tab-ev" data-panel="ev"><div id="ev-slot"></div></section>
 
         <section id="panel-old" class="tabpanel" role="tabpanel" aria-labelledby="tab-old" data-panel="old">
-          <label class="check"><input type="checkbox" name="car1_on"> It replaces two cars</label>
+          <label class="check"><input type="checkbox" name="car1_on" data-reveals="[data-second]"> It replaces two cars</label>
           <div id="car-slot"></div>
         </section>
 
@@ -69,13 +69,13 @@
         <section id="panel-optional" class="tabpanel" role="tabpanel" aria-labelledby="tab-optional" data-panel="optional">
           <fieldset class="card">
             <legend>Optional</legend>
-            <label class="check"><input type="checkbox" name="free_on"> I get free charging somewhere</label>
+            <label class="check"><input type="checkbox" name="free_on" data-reveals="[data-free]"> I get free charging somewhere</label>
             <div class="panel" data-free hidden>
               <label class="field"><span class="label">Count it as</span>
                 <select name="free_mode"><option value="share">Percent of charging</option><option value="kwh">kWh per month</option></select></label>
               <label class="field"><span class="label">Amount</span><input name="free_value" type="number" inputmode="decimal" min="0" step="any"></label>
             </div>
-            <label class="check"><input type="checkbox" name="charger_on"> I will install a home charger</label>
+            <label class="check"><input type="checkbox" name="charger_on" data-reveals="[data-charger]"> I will install a home charger</label>
             <div class="panel" data-charger hidden>
               <label class="field"><span class="label">Install cost <em>$</em></span><input name="charger_cost" type="number" inputmode="decimal" min="0" step="any"></label>
             </div>

@@ -1,6 +1,6 @@
-import { annualKwh, freeShareFromMonthlyKwh } from './calc.js';
+import { annualKwh, freeShareFromMonthlyKwh, n } from './calc.js';
 
-const num = (fd, k) => Number(fd.get(k)) || 0;
+const num = (fd, k) => n(fd.get(k));
 const pct = (fd, k) => num(fd, k) / 100;
 const on = (fd, k) => fd.get(k) === 'on';
 

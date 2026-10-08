@@ -87,7 +87,7 @@ export function carFieldset(index) {
     ${input(`${p}_insurance`, 'Insurance per year', { unit: '$' })}
     ${input(`${p}_registration`, 'Registration per year', { unit: '$' })}
     ${maintenance(p)}
-    <label class="check"><input type="checkbox" name="${p}_sellOn"> I am selling this car</label>
+    <label class="check"><input type="checkbox" name="${p}_sellOn" data-reveals='[data-sale="${p}"]'> I am selling this car</label>
     <div class="panel" data-sale="${p}" hidden>
       ${input(`${p}_sellValue`, 'Sale price', { unit: '$' })}
       ${input(`${p}_sellPayoff`, 'Loan payoff', { unit: '$', hint: 'What you still owe on it, if anything.' })}

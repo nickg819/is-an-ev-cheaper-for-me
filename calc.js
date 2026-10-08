@@ -8,8 +8,9 @@
  * Rates (taxRate, apr, shares) are fractions, not percents.
  */
 
-const n = (v) => Number(v) || 0;
+export const n = (v) => Number(v) || 0;
 const sum = (xs) => xs.reduce((a, b) => a + b, 0);
+const clamp01 = (x) => Math.min(1, Math.max(0, n(x)));
 
 export function normalizeShares(shares) {
   const total = sum(shares.map(n));
@@ -74,7 +75,7 @@ export function annualKwh(kwhPer100, annualMiles) {
 
 export function freeShareFromMonthlyKwh(kwhPerMonth, annualKwhTotal) {
   if (!(annualKwhTotal > 0)) return 0;
-  return Math.min(1, Math.max(0, (n(kwhPerMonth) * 12) / annualKwhTotal));
+  return clamp01((n(kwhPerMonth) * 12) / annualKwhTotal);
 }
 
 export function gasUsage({ cars, annualMiles, years }) {
@@ -91,7 +92,7 @@ function mixRate({ homeRate, fastRate, homeShare, fastShare }) {
 
 export function evEnergy({ kwhPer100, annualMiles, years, charging, freeShare = 0 }) {
   const kwh = annualKwh(kwhPer100, annualMiles) * years;
-  const free = Math.min(1, Math.max(0, n(freeShare)));
+  const free = clamp01(freeShare);
   const atFast = kwh * n(charging.fastRate);
   const atMix = kwh * mixRate(charging);
   return { kwh, atFast, atMix, actual: atMix * (1 - free) };
@@ -100,39 +101,48 @@ export function evEnergy({ kwhPer100, annualMiles, years, charging, freeShare = 
 const maintenanceYearly = (m = {}) =>
   n(m.oil) + n(m.tires) + n(m.brakes) + n(m.repairs) * (m.repairsMultiplier == null ? 1 : n(m.repairsMultiplier));
 
-const sumTotals = (t) =>
-  t.acquisition + t.energy + t.insurance + t.registration + t.maintenance + t.homeCharger + t.equity;
+const withTotal = (t) => ({ ...t, total: sum(Object.values(t)) });
 
 function netSale(car) {
   return car.sale && car.sale.on ? n(car.sale.value) - n(car.sale.payoff) : 0;
 }
 
-function evTotals(input, energy) {
-  const { ev, years, options } = input;
-  const t = {
-    acquisition: acquisitionCost(ev.acquisition, years).total,
+function vehicleCosts(v, years) {
+  const acq = acquisitionCost(v.acquisition, years);
+  return {
+    acquisition: acq.total,
+    leaseTerms: acq.leaseTerms,
+    insurance: n(v.insurance) * years,
+    registration: n(v.registration) * years,
+    maintenance: maintenanceYearly(v.maintenance) * years,
+  };
+}
+
+function evTotals(input, energy, own) {
+  const { options } = input;
+  return withTotal({
+    acquisition: own.acquisition,
     energy: energy.actual,
-    insurance: n(ev.insurance) * years,
-    registration: n(ev.registration) * years,
-    maintenance: maintenanceYearly(ev.maintenance) * years,
+    insurance: own.insurance,
+    registration: own.registration,
+    maintenance: own.maintenance,
     homeCharger: options.homeCharger && options.homeCharger.on ? n(options.homeCharger.cost) : 0,
     equity: -sum(input.cars.map(netSale)),
-  };
-  return { ...t, total: sumTotals(t) };
+  });
 }
 
 function iceTotals(input, gas) {
-  const { cars, years, gasPrice } = input;
-  const t = {
-    acquisition: sum(cars.map((c) => acquisitionCost(c.acquisition, years).total)),
-    energy: gas.gallons * gasPrice,
-    insurance: sum(cars.map((c) => n(c.insurance))) * years,
-    registration: sum(cars.map((c) => n(c.registration))) * years,
-    maintenance: sum(cars.map((c) => maintenanceYearly(c.maintenance))) * years,
+  const costs = input.cars.map((c) => vehicleCosts(c, input.years));
+  const add = (key) => sum(costs.map((c) => c[key]));
+  return withTotal({
+    acquisition: add('acquisition'),
+    energy: gas.gallons * input.gasPrice,
+    insurance: add('insurance'),
+    registration: add('registration'),
+    maintenance: add('maintenance'),
     homeCharger: 0,
     equity: 0,
-  };
-  return { ...t, total: sumTotals(t) };
+  });
 }
 
 function breakdownOf(ev, ice, energy) {
@@ -151,7 +161,7 @@ function breakdownOf(ev, ice, energy) {
 
 function freeShareOf(input) {
   const f = input.options && input.options.freeCharging;
-  return f && f.on ? Math.min(1, Math.max(0, n(f.share))) : 0;
+  return f && f.on ? clamp01(f.share) : 0;
 }
 
 export function compare(input) {
@@ -161,7 +171,8 @@ export function compare(input) {
     charging: input.charging, freeShare: freeShareOf(input),
   });
   const gas = gasUsage({ cars: input.cars, annualMiles, years });
-  const ev = evTotals(input, energy);
+  const evOwn = vehicleCosts(input.ev, years);
+  const ev = evTotals(input, energy, evOwn);
   const ice = iceTotals(input, gas);
   const savings = ice.total - ev.total;
   const miles = annualMiles * years;
@@ -175,7 +186,7 @@ export function compare(input) {
     breakEvenGasPrice: gas.gallons > 0 ? gasPrice - savings / gas.gallons : null,
     evEnergyPerMile: ev.energy / miles,
     iceEnergyPerMile: ice.energy / miles,
-    leaseTerms: { ev: acquisitionCost(input.ev.acquisition, years).leaseTerms },
+    leaseTerms: { ev: evOwn.leaseTerms },
   };
 }
 
@@ -183,8 +194,7 @@ const MAX_TAX = 0.2;
 const MIN_REAL_RATE = 0.005;
 const MAX_APR = 0.3;
 
-const plausibleTax = (rate) => rate === 0 || (rate >= MIN_REAL_RATE && rate <= MAX_TAX);
-const plausibleApr = (rate) => rate === 0 || (rate >= MIN_REAL_RATE && rate <= MAX_APR);
+const plausibleRate = (rate, max) => rate === 0 || (rate >= MIN_REAL_RATE && rate <= max);
 
 const BUY_FIELDS = [['fees', 'Fees'], ['downPayment', 'Down payment'], ['resale', 'Resale value'], ['incentives', 'Incentives'], ['loanMonths', 'Loan length']];
 const LEASE_FIELDS = [['dueAtSigning', 'Due at signing'], ['turnInFee', 'Turn-in fee'], ['incentives', 'Incentives']];
@@ -198,8 +208,8 @@ function nonNegative(obj, list, prefix, who, need) {
 
 function checkBuy(a, prefix, who, need) {
   need(n(a.price) > 0, `${prefix}.price`, `${who}: Enter the price.`);
-  need(plausibleTax(n(a.taxRate)), `${prefix}.taxRate`, `${who}: Enter the sales tax as a percent, like 9.25.`);
-  need(plausibleApr(n(a.apr)), `${prefix}.apr`, `${who}: Enter the loan APR as a percent, like 5.9.`);
+  need(plausibleRate(n(a.taxRate), MAX_TAX), `${prefix}.taxRate`, `${who}: Enter the sales tax as a percent, like 9.25.`);
+  need(plausibleRate(n(a.apr), MAX_APR), `${prefix}.apr`, `${who}: Enter the loan APR as a percent, like 5.9.`);
   need(n(a.apr) === 0 || n(a.loanMonths) > 0, `${prefix}.loanMonths`, `${who}: Enter the loan length in months.`);
   nonNegative(a, BUY_FIELDS, prefix, who, need);
 }

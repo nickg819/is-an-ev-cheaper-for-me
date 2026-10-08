@@ -68,3 +68,23 @@ test('a failed request throws', async () => {
   const bad = async () => ({ ok: false, status: 500 });
   await assert.rejects(() => getMakes(2026, bad), /500/);
 });
+
+test('real requests are cached by URL, and a failed request is retried', async () => {
+  const real = globalThis.fetch;
+  let calls = 0;
+  let fail = true;
+  globalThis.fetch = async () => {
+    calls += 1;
+    if (fail) return { ok: false, status: 500 };
+    return { ok: true, json: async () => ({ menuItem: [{ text: 'A', value: '1' }] }) };
+  };
+  try {
+    await assert.rejects(() => getMakes(1999), /500/);
+    fail = false;
+    assert.equal((await getMakes(1999)).length, 1);
+    await getMakes(1999);
+    assert.equal(calls, 2);
+  } finally {
+    globalThis.fetch = real;
+  }
+});

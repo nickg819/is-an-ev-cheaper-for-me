@@ -1,8 +1,15 @@
-const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+import { annualKwh } from './calc.js';
+
+const SAME_COST = 0.5;
+const ERRORS_SHOWN = 4;
+
+export const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 const whole = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 const price = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
 
 const signed = (x) => `${x < 0 ? '-' : ''}${money.format(Math.abs(x))}`;
+const tone = (x) => (x < 0 ? 'neg' : 'pos');
+const isFlat = (r) => Math.abs(r.savings) < SAME_COST;
 const cents = (x) => `${(x * 100).toFixed(1)} cents`;
 const yearsText = (y) => `${y} ${y === 1 ? 'year' : 'years'}`;
 
@@ -20,7 +27,7 @@ const LABELS = {
 
 function headline(r, years) {
   const amount = money.format(Math.abs(r.savings));
-  if (Math.abs(r.savings) < 0.5) return `The two cost about the same over ${yearsText(years)}.`;
+  if (isFlat(r)) return `The two cost about the same over ${yearsText(years)}.`;
   return r.savings > 0
     ? `The EV saves you <span class="amount">${amount}</span> over ${yearsText(years)}.`
     : `The EV costs you <span class="amount">${amount}</span> more over ${yearsText(years)}.`;
@@ -29,7 +36,7 @@ function headline(r, years) {
 const gasLabel = (count) => (count > 1 ? 'Gas cars' : 'Gas car');
 
 function subline(r) {
-  if (Math.abs(r.savings) < 0.5) return '';
+  if (isFlat(r)) return '';
   const per = `<b>${money.format(Math.abs(r.perMonth))} a month</b>, ${money.format(Math.abs(r.perYear))} a year, ${cents(Math.abs(r.perMile))} a mile.`;
   if (r.breakEvenGasPrice == null) return per;
   if (r.breakEvenGasPrice <= 0) {
@@ -63,7 +70,7 @@ function gasColumn(r, input) {
 }
 
 function evColumn(r, input) {
-  const kwhYear = (input.ev.kwhPer100 / 100) * input.annualMiles;
+  const kwhYear = annualKwh(input.ev.kwhPer100, input.annualMiles);
   const perKwh = kwhYear > 0 ? r.ev.energy / input.years / kwhYear : 0;
   return `<section class="col ev"><header class="display">EV</header>
     ${step(whole.format(input.annualMiles), 'miles a year', '&divide;', (100 / input.ev.kwhPer100).toFixed(1), 'miles per kWh')}
@@ -84,13 +91,13 @@ function bars(r, input) {
 
 function breakdownTable(r, years) {
   const rows = Object.entries(LABELS)
-    .filter(([key, [, always]]) => always || Math.abs(r.breakdown[key]) > 0.5)
+    .filter(([key, [, always]]) => always || Math.abs(r.breakdown[key]) > SAME_COST)
     .map(([key, [label]]) => {
       const v = r.breakdown[key];
-      return `<tr><th scope="row">${label}</th><td class="${v < 0 ? 'neg' : 'pos'}">${signed(v)}</td></tr>`;
+      return `<tr><th scope="row">${label}</th><td class="${tone(v)}">${signed(v)}</td></tr>`;
     })
     .join('');
-  const total = `<tr class="total"><th scope="row">Total</th><td class="${r.savings < 0 ? 'neg' : 'pos'}">${signed(r.savings)}</td></tr>`;
+  const total = `<tr class="total"><th scope="row">Total</th><td class="${tone(r.savings)}">${signed(r.savings)}</td></tr>`;
   return `<table><caption>Where the ${years}-year difference comes from. Positive means the EV saves you money.</caption>
     <tbody>${rows}${total}</tbody></table>`;
 }
@@ -105,8 +112,8 @@ export function renderResult(resultEl, workingEl, r, input) {
 }
 
 export function renderErrors(resultEl, workingEl, errors) {
-  const shown = errors.slice(0, 4).map((e) => `<li>${e.message}</li>`).join('');
-  const more = errors.length > 4 ? `<li>And ${errors.length - 4} more.</li>` : '';
+  const shown = errors.slice(0, ERRORS_SHOWN).map((e) => `<li>${e.message}</li>`).join('');
+  const more = errors.length > ERRORS_SHOWN ? `<li>And ${errors.length - ERRORS_SHOWN} more.</li>` : '';
   resultEl.innerHTML = `<h2 class="headline display">Not enough to go on yet.</h2>
     <p class="sub">Fill in the required fields and the answer shows up here.</p>
     <ul class="todo">${shown}${more}</ul>`;
