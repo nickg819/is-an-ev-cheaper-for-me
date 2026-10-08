@@ -52,7 +52,7 @@ function showTotalHint(p) {
     annualMiles: Number(form.elements.annualMiles.value) || 0,
   });
   el.textContent = hint
-    ? `Published estimate for a car like this: about ${Math.round(hint.perYear).toLocaleString('en-US')} dollars a year for maintenance and repairs together. Enter your own split below. ${hint.note} Source: ${hint.source}.`
+    ? `Published estimate for a car like this: about $${Math.round(hint.perYear).toLocaleString('en-US')} a year for maintenance and repairs together. Enter your own split below. ${hint.note} Source: ${hint.source}.`
     : '';
 }
 

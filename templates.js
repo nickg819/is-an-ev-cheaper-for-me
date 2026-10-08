@@ -25,7 +25,7 @@ const buyPanel = (p) => `
     ${input(`${p}_price`, 'Price', { unit: '$' })}
     ${input(`${p}_tax`, 'Sales tax', { unit: '%', hint: 'Your local rate, like 9.25. Your city or state tax site has it.' })}
     ${input(`${p}_fees`, 'Fees', { unit: '$', hint: 'Title, registration and dealer doc fees.' })}
-    ${input(`${p}_down`, 'Down payment', { unit: '$', hint: 'Paying cash? Enter the full price plus tax and fees.' })}
+    ${input(`${p}_down`, 'Down payment', { unit: '$', hint: 'If you are paying cash, enter the full price plus tax and fees.' })}
     ${input(`${p}_apr`, 'Loan APR', { unit: '%', hint: 'Optional.' })}
     ${input(`${p}_loanMonths`, 'Loan length', { unit: 'months', hint: 'Optional.' })}
     ${input(`${p}_resale`, 'Resale value at the end', { unit: '$', hint: 'Your estimate. Leave it empty to count none.' })}

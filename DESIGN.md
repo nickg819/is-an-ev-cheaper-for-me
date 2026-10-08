@@ -127,7 +127,7 @@ components:
 
 **Creative North Star: "The Itemized Receipt"**
 
-The page states the answer in one sentence and then shows every line of the working. It is flat and square: thin 1px cool lines, no radii on containers, no shadows, no badge or starburst, and a faint paper grain over a sky-blue ground. Condensed all-caps Archivo carries the headline and section titles. Everything else is plain Archivo at a few fixed sizes. Color is a code, not decoration: teal always means EV, brick peach always means gas.
+The page states the answer in one sentence and then shows every line of the working. It is flat and square: thin 1px cool lines, no radii on containers, no shadows, no badge or starburst, and a faint paper grain over a sky-blue ground. Condensed all-caps Archivo carries the headline and section titles. Everything else is plain Archivo at a few fixed sizes. Color carries meaning: teal always means EV, brick peach always means gas.
 
 Density is moderate. The result sits first, the math columns and bar pair follow, the form comes last. On a phone the result becomes a dark night card with both totals, a sticky peek line stays pinned while editing, and the form splits into tabs. Personality lives only in help text and empty states; labels and headings stay literal.
 
@@ -257,4 +257,5 @@ Native radios and checkboxes, 24px, teal accent, in 44px rows with bold labels.
 - The display face loads from the Google Fonts CDN, not self-hosted, and the file has no local fallback of the same condensed width.
 - The math columns show read-only values; the approved comp showed editable inputs there.
 - The comp-diff gate has not been run against the shipped build.
-- Contrast of white on Brick Peach and on Dark Teal was set by the designer's choice of values and has not been re-measured in this pass.
+- White on Brick Peach measures 4.6:1 and white on Dark Teal about 5.1:1, both above the 4.5:1 minimum, but the margin on peach is thin.
+- The detector reports six font sizes (11, 14, 17, 19, 20 and 28px) that appear in the Hierarchy prose but not in the typography frontmatter.
