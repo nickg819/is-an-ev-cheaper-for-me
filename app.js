@@ -65,7 +65,7 @@ function updateMaintenance(p) {
     box.dataset.auto = '1';
   }
   const assumed = guessed ? 'Assuming a gas car with about the same miles until you pick yours. ' : '';
-  note.textContent = `${assumed}Estimate: about ${money.format(hint.perYear)} a year over the time you'll own it. Change it if you know better. ${hint.note} The survey doesn't say whether tires are in there, so add them below and trim this if you do. Source: ${hint.source}.`;
+  note.textContent = `${assumed}About ${money.format(hint.perYear)} a year. ${hint.note} Change it if you know better.`;
 }
 
 function markMaintenanceEdited(box) {

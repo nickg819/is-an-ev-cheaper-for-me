@@ -30,7 +30,7 @@ const buyPanel = (p) => `
     ${input(`${p}_loanMonths`, 'Loan length', { unit: 'months' })}
     ${input(`${p}_resale`, 'Resale value', { unit: '$' })}
     ${input(`${p}_incentives`, 'Incentives', { unit: '$' })}
-    <p class="note">Sales tax is your local rate, like 9.25. Your city or state tax site has it. Fees are the title, registration and dealer doc fees. If you are paying cash, enter the full price plus tax and fees as the down payment. The loan fields are optional. Resale value is your own estimate, and an empty field counts none. Incentives are federal, state or utility credits.</p>
+    <p class="note">Sales tax is a percent, like 9.25. Fees are title, registration and dealer fees. Paying cash? Enter the full price plus tax and fees as the down payment.</p>
   </div>`;
 
 const leasePanel = (p) => `

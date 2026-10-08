@@ -39,7 +39,7 @@
             </div>
             <label class="field"><span class="label">Miles per year</span><input name="annualMiles" type="number" inputmode="decimal" min="0" step="any"></label>
             <label class="field"><span class="label">Years of ownership</span><input name="years" type="number" inputmode="decimal" min="0" step="any" value="3"></label>
-            <p id="gasPrice-help" class="note help">Gas price: look up your state's average on <a href="https://gasprices.aaa.com/state-gas-price-averages/" target="_blank" rel="noopener noreferrer">AAA gas prices<span class="sr"> (opens in a new tab)</span></a>.</p>
+            <p id="gasPrice-help" class="note help">State averages are at <a href="https://gasprices.aaa.com/state-gas-price-averages/" target="_blank" rel="noopener noreferrer">AAA gas prices<span class="sr"> (opens in a new tab)</span></a>.</p>
           </fieldset>
         </section>
 
@@ -62,8 +62,8 @@
             </div>
             <label class="field"><span class="label">Charged at home <em>% of charging</em></span><input name="homeShare" type="number" inputmode="decimal" min="0" step="any"></label>
             <label class="field"><span class="label">Charged fast <em>% of charging</em></span><input name="fastShare" type="number" inputmode="decimal" min="0" step="any"></label>
-            <p id="homeRate-help" class="note help">Home electricity: your utility bill has your exact rate. For a state average, see <a href="https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a" target="_blank" rel="noopener noreferrer">EIA residential prices<span class="sr"> (opens in a new tab)</span></a>. They are listed in cents, so 16 cents is 0.16.</p>
-            <p id="fastRate-help" class="note help">Fast charging: see average public charging prices by state on <a href="https://gasprices.aaa.com/ev-charging-prices/" target="_blank" rel="noopener noreferrer">AAA EV charging prices<span class="sr"> (opens in a new tab)</span></a>. The app of the network you use shows its own rate.</p>
+            <p id="homeRate-help" class="note help">Your utility bill has your home rate. State averages are at <a href="https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a" target="_blank" rel="noopener noreferrer">EIA residential prices<span class="sr"> (opens in a new tab)</span></a>.</p>
+            <p id="fastRate-help" class="note help">State averages for public charging are at <a href="https://gasprices.aaa.com/ev-charging-prices/" target="_blank" rel="noopener noreferrer">AAA EV charging prices<span class="sr"> (opens in a new tab)</span></a>.</p>
           </fieldset>
         </section>
 
@@ -88,7 +88,7 @@
     <section id="result" class="result"></section>
     <div id="working" class="working"></div>
 
-    <footer><p>Vehicle data from the EPA and DOE at fueleconomy.gov. Maintenance figures are estimates, with their sources listed under each car. The EPA lookup gets the year, make and model you pick, and the page loads its font from Google. Nothing else leaves your browser.</p></footer>
+    <footer><p>Vehicle data from fueleconomy.gov.</p></footer>
   </main>
   <script type="module" src="app.js"></script>
 </body>
