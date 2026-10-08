@@ -156,6 +156,13 @@ footer p { max-width: 70ch; margin: 0; }
   #panel-basics .card { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.monthly { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.monthly > div { display: grid; gap: 4px; padding: 14px 16px; color: #fff; }
+.monthly .gas { background: var(--gas); }
+.monthly .ev { background: var(--ev); }
+.monthly .l { color: #fff; font-size: 13px; font-weight: 700; }
+.monthly strong { font-size: 30px; font-weight: 800; font-stretch: 78%; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.monthly + .note { margin: 10px 0 0; }
 .total th, .total td { border-top: 1px solid var(--line-strong); font-weight: 800; }
 @media (prefers-reduced-motion: no-preference) {
   .result { transition: background-color .2s ease-out; }

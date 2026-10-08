@@ -75,7 +75,8 @@ function skeleton() {
       <div class="out"><div class="n" data-v="evYear"></div><span class="l" data-v="evPerMile"></span></div></section>
   </div>
   <section class="bars-wrap"><h3 class="display" data-v="barsTitle"></h3><div data-slot="bars"></div></section>
-  <div data-slot="table"></div>`;
+  <div data-slot="table"></div>
+  <div data-slot="monthly"></div>`;
 }
 
 function bars(r, input) {
@@ -100,6 +101,15 @@ function breakdownTable(r, years) {
     ? `<p class="note">Your ownership period is longer than one lease, so this counts ${r.leaseTerms.ev} back-to-back leases.</p>` : '';
   return `<table><caption>Where the ${years}-year difference comes from. Positive means the EV saves you money.</caption>
     <tbody>${rows}${total}</tbody></table>${lease}`;
+}
+
+function monthlyBudget(r, years) {
+  const months = years * 12;
+  return `<div class="monthly">
+      <div class="gas"><span class="l">Your monthly auto budget now</span><strong>${money.format(r.ice.total / months)}</strong></div>
+      <div class="ev"><span class="l">Your monthly auto budget with an EV</span><strong>${money.format(r.ev.total / months)}</strong></div>
+    </div>
+    <p class="note">Total cost over ${yearsText(years)}, divided by the months, with everything above counted.</p>`;
 }
 
 function fillWorking(el, r, input) {
@@ -128,6 +138,7 @@ function fillWorking(el, r, input) {
   box('mikwh', trim(100 / input.ev.kwhPer100, 2));
   slot('bars', bars(r, input));
   slot('table', breakdownTable(r, input.years));
+  slot('monthly', monthlyBudget(r, input.years));
 }
 
 export function renderResult(resultEl, workingEl, r, input) {
