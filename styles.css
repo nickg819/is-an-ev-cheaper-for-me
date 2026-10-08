@@ -94,7 +94,7 @@ form { display: grid; gap: 18px; }
 legend { padding: 0 6px; font: 800 22px/1 Archivo, sans-serif; font-stretch: 68%; text-transform: uppercase; letter-spacing: .015em; }
 .group { display: grid; gap: 12px; margin: 0; padding: 14px; min-width: 0; }
 .group legend { font-size: 17px; }
-.field { display: grid; gap: 4px; min-width: 0; }
+.field { display: grid; gap: 4px; align-content: start; min-width: 0; }
 .label { font-size: 13px; font-weight: 700; }
 em { font-style: normal; font-weight: 600; font-size: 12px; color: var(--ink-2); }
 small { color: var(--ink-2); font-size: 12px; }
