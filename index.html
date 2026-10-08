@@ -12,11 +12,11 @@
 </head>
 <body>
   <!--
-    THESIS: the answer comes first and the working is shown. A plain page that refuses the generic savings-calculator look: no hero stat tile, no rounded cards, no decorative badge.
+    THESIS: inputs first, the determination last, and the working shown under it. A plain page that refuses the generic savings-calculator look: no hero stat tile, no rounded cards, no decorative badge.
     OWN-WORLD: Quest palette as the image displays it. Sky-blue ground #dff0f9, forest teal #1b4440 for the EV, brick peach (text-safe #a96353) for gas, cool ink #12202a. Square corners, 1px cool lines, faint paper grain, condensed all-caps Archivo for headings.
     STORY: a shopper sees whether the EV saves money, where each dollar comes from, and can change any input to test it.
-    FIRST VIEWPORT: brand line, then the result block: one headline sentence with the saving in a flat teal block. Phone: dark night card with gas and EV totals, then section tabs.
-    FORM: Operate surface, result-first layout A with phone tabs from C and paired bars from B. Chosen over two other comps. Seed key: none, direction pinned by the user.
+    FIRST VIEWPORT: brand line, a pinned line with the current answer, then the inputs (phone: section tabs). The result block closes the page: one headline sentence with the saving in a flat teal block, then the working.
+    FORM: Operate surface, layout A with phone tabs from C and paired bars from B, reordered by the user to put inputs first. Seed key: none, direction pinned by the user.
     FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
   -->
   <main class="site">
@@ -27,9 +27,6 @@
 
     <p id="peek" class="peek" aria-hidden="true" hidden></p>
     <p id="announce" class="sr" role="status"></p>
-    <section id="result" class="result"></section>
-    <div id="working" class="working"></div>
-
     <div class="entry">
       <nav class="tabs" role="tablist" aria-label="Sections of the form">
         <button type="button" role="tab" id="tab-basics" data-tab="basics" aria-controls="panel-basics">Basics</button>
@@ -83,6 +80,9 @@
         </section>
       </form>
     </div>
+
+    <section id="result" class="result"></section>
+    <div id="working" class="working"></div>
 
     <footer><p>Vehicle data from the EPA and DOE at fueleconomy.gov. Maintenance figures are estimates, with their sources listed under each car. The only thing sent anywhere is the year, make and model you pick, which goes to the EPA lookup.</p></footer>
   </main>

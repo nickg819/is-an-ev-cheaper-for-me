@@ -47,7 +47,7 @@ Real data from the EPA lookup and the cited Consumer Reports figures. There are 
 
 - Show the working. A person should see how each number was built and be able to change it.
 - Never fabricate. A prefilled number carries its source, and an unsourced one stays empty.
-- The answer comes first, especially on a phone, and updates as they type.
+- Inputs come first and the determination comes last. A pinned line keeps the current answer in view while they type.
 - Optional means optional. Nothing in the result depends on a field the person did not fill in.
 - Say plainly when the honest answer is that the EV costs more.
 

@@ -1,6 +1,6 @@
 ---
 name: Is an EV Cheaper for Me?
-description: A plain, square-cornered calculator that states the answer first in condensed caps and shows the working in two flat color-coded columns.
+description: A plain, square-cornered calculator that collects the inputs first, then closes with the answer in condensed caps and the working in two flat color-coded columns.
 colors:
   sky-paper: "#dff0f9"
   sky-cream: "#f6fbfe"
@@ -127,14 +127,14 @@ components:
 
 **Creative North Star: "The Itemized Receipt"**
 
-The page states the answer in one sentence and then shows every line of the working. It is flat and square: thin 1px cool lines, no radii on containers, no shadows, no badge or starburst, and a faint paper grain over a sky-blue ground. Condensed all-caps Archivo carries the headline and section titles. Everything else is plain Archivo at a few fixed sizes. Color carries meaning: teal always means EV, brick peach always means gas.
+The page collects the inputs first and ends with the determination: one sentence, then every line of the working. It is flat and square: thin 1px cool lines, no radii on containers, no shadows, no badge or starburst, and a faint paper grain over a sky-blue ground. Condensed all-caps Archivo carries the headline and section titles. Everything else is plain Archivo at a few fixed sizes. Color carries meaning: teal always means EV, brick peach always means gas.
 
-Density is moderate. The result sits first, the math columns and bar pair follow, the form comes last. On a phone the result becomes a dark night card with both totals, a sticky peek line stays pinned while editing, and the form splits into tabs. Personality lives only in help text and empty states; labels and headings stay literal.
+Density is moderate. The form comes first, then the result, the math columns and the bar pair. A pinned peek line keeps the current answer in view at every size while the form is on screen. On a phone the result becomes a dark night card with both totals, and the form splits into tabs. Personality lives only in help text and empty states; labels and headings stay literal.
 
 The build departs from the direction contract in no material way. Where it differs from the approved comp is listed under Known open items.
 
 **Key Characteristics:**
-- Answer first; working shown below it in the same flat vocabulary.
+- Inputs first, determination last; the working sits under it in the same flat vocabulary.
 - Square corners on every container; 1px lines in place of heavy outlines.
 - Two fills carry meaning (teal EV, peach gas), each always with white text.
 - Condensed caps display type; tabular numerals for money.
@@ -188,11 +188,11 @@ A cool, low-chroma sky-and-ink palette with exactly two saturated fills, one per
 
 ## Layout
 
-A single column, max width 960px, centered, with 16px side padding (14px on phone) and a 22px vertical gap between blocks (16px on phone). Order: brand line, result, working (two math columns, bars panel, breakdown table), form, footer.
+A single column, max width 960px, centered, with 16px side padding (14px on phone) and a 22px vertical gap between blocks (16px on phone). Order: brand line, peek line, form, result, working (two math columns, bars panel, breakdown table), footer.
 
 Spacing is a loose 6 / 12 / 18 / 22 / 28 rhythm: 12px between fields, 14-18px inside cards, 18px between math columns, 28px between bars. The math columns are two equal grid columns on wide screens and stack on phone. Form cards use auto-fit grids with 140px (vehicle pickers), 180px (option panels) and 200px (basics) minimum widths.
 
-At 760px and below, the result becomes the night card with gas and EV tiles, the working block moves after the form, and the form becomes five tab-switched panels (Basics, EV, Old car, Charging, Optional) under a sticky night peek line. On wider screens all panels show and the peek line and tabs are hidden. Touch targets are at least 44px (inputs 46px, radios and checkboxes 24px with 44px rows).
+At 760px and below, the result becomes the night card with gas and EV tiles, and the form becomes five tab-switched panels (Basics, EV, Old car, Charging, Optional). The peek line is pinned at every size and shows only while the result card is out of view. On wider screens all panels show and the tabs are hidden. Touch targets are at least 44px (inputs 46px, radios and checkboxes 24px with 44px rows).
 
 ## Elevation & Depth
 
@@ -237,7 +237,7 @@ Native radios and checkboxes, 24px, teal accent, in 44px rows with bold labels.
 ## Do's and Don'ts
 
 ### Do:
-- **Do** put the answer sentence first and show the working directly beneath it.
+- **Do** put the inputs first, end with the answer sentence and show the working directly beneath it.
 - **Do** use teal for EV and peach for gas everywhere, with white text on both.
 - **Do** keep every container square and every line 1px.
 - **Do** use the display treatment (caps, 68% stretch, 800) for headings and legends only.
