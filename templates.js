@@ -30,7 +30,7 @@ const buyPanel = (p) => `
     ${input(`${p}_loanMonths`, 'Loan length', { unit: 'months' })}
     ${input(`${p}_resale`, 'Resale value', { unit: '$' })}
     ${input(`${p}_incentives`, 'Incentives', { unit: '$' })}
-    <p class="note">Sales tax is a percent, like 9.25. Fees are title, registration and dealer fees. Paying cash? Enter the full price plus tax and fees as the down payment.</p>
+    <p class="note">Sales tax is a percent, like 9.25. Fees are title, registration and dealer fees. If you're paying cash, enter the full price plus tax and fees as the down payment.</p>
   </div>`;
 
 const leasePanel = (p) => `
@@ -83,7 +83,7 @@ export function evFieldset() {
     <div class="panel">
       ${input(`${p}_eff`, 'Energy use', { unit: 'kWh per 100 mi' })}
     </div>
-    <p class="note">Filled in from the EPA.</p>
+    <p class="note">The EPA supplies this.</p>
     <div class="radios" role="group" aria-label="Buy or lease">${radio(p, 'buy', 'Buy', true)}${radio(p, 'lease', 'Lease', false)}</div>
     ${buyPanel(p)}${leasePanel(p)}
     ${yearlyCosts(p)}
@@ -100,7 +100,7 @@ export function carFieldset() {
     <div class="panel">
       ${input(`${p}_eff`, 'Fuel economy', { unit: 'mpg' })}
     </div>
-    <p class="note">Filled in from the EPA. Edit it if you track your own.</p>
+    <p class="note">The EPA supplies this. Edit it if you track your own.</p>
     <div class="radios" role="group" aria-label="Payment type">${radio(p, 'owned', 'Owned', true)}${radio(p, 'payments', 'Payments', false)}${radio(p, 'lease', 'Lease', false)}</div>
     ${paymentsPanel(p)}${leasePanel(p)}
     ${yearlyCosts(p)}

@@ -111,7 +111,7 @@ function monthlyBudget(r, years) {
       <div class="gas"><strong>${money.format(r.ice.total / months)}</strong><span class="l">Your monthly auto budget now</span></div>
       <div class="ev"><strong>${money.format(r.ev.total / months)}</strong><span class="l">Your monthly auto budget with an EV</span></div>
     </div>
-    <p class="note">Total cost over ${yearsText(years)}, divided by the months, with everything above counted.</p>`;
+    <p class="note">Total cost over ${yearsText(years)}, divided by ${years * 12} months.</p>`;
 }
 
 function fillWorking(el, r, input) {

@@ -65,7 +65,7 @@ function updateMaintenance(p) {
     box.dataset.auto = '1';
   }
   const assumed = guessed ? 'Assuming a gas car with about the same miles until you pick yours. ' : '';
-  note.textContent = `${assumed}About ${money.format(hint.perYear)} a year. ${hint.note} Change it if you know better.`;
+  note.textContent = `${assumed}About ${money.format(hint.perYear)} a year. ${hint.note} Replace it with your own number if you have one.`;
 }
 
 function markMaintenanceEdited(box) {
@@ -98,7 +98,7 @@ async function applyVehicle(p, id, token) {
     if (refusal) return clearVehicle(p, refusal);
     vehicles[p] = v;
     field(p, 'eff').value = efficiencyOf(p, v);
-    message(p, powertrainOf(v.atvType) === 'hybrid' ? 'Hybrid or plug-in: check the mpg is right for how you drive it.' : '');
+    message(p, powertrainOf(v.atvType) === 'hybrid' ? 'This is a hybrid or plug-in. Check that the mpg fits how you drive it.' : '');
     updateMaintenance(p);
     recompute();
   } catch {
