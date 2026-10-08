@@ -1,23 +1,24 @@
-# Is an EV Cheaper for Me?
+# Is an EV cheaper for me?
 
-A calculator that compares the full cost of owning an EV against the gas car or cars it
-replaces: energy, purchase or lease, tax and fees, insurance, registration and maintenance.
+A calculator that compares owning an EV with keeping the gas car it would replace. It
+covers energy, buying or leasing, tax and fees, insurance, registration, maintenance
+and tires.
 
-Everything runs in your browser. Nothing is saved or sent anywhere except the vehicle
-lookup, which asks the EPA for the year, make and model you pick.
+It all runs in the browser. The only request that leaves the page is the EPA lookup for
+the year, make and model you pick.
 
-## Run it locally
+## Running it
 
     npm start
 
-Then open http://localhost:8080. The page uses ES modules, so opening `index.html` straight
-from disk will not work.
-
-## Run the tests
+then open http://localhost:8080. It uses ES modules, so opening `index.html` straight
+from disk won't work.
 
     npm test
 
+runs the tests.
+
 ## Data
 
-Vehicle efficiency comes from the EPA and DOE at fueleconomy.gov. Maintenance estimates
-come from the sources listed in `maintenance-rates.js`. They are estimates. Edit them.
+Fuel economy comes from fueleconomy.gov. The maintenance estimate comes from a Consumer
+Reports owner survey (see `maintenance-rates.js`) and is only a starting point.

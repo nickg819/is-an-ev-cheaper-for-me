@@ -1,5 +1,5 @@
-// Repair and maintenance together, dollars per mile by odometer band.
-// Not inflation-adjusted. Hybrids are unsourced, so they get no estimate.
+// repair + maintenance together, $ per mile by odometer band. 2019-20 survey data,
+// not adjusted for inflation. no hybrid figures
 const CR_SOURCE = 'Consumer Reports, Electric Vehicle Ownership Costs: Chapter 2, Maintenance (Harto, Sept. 2020), '
   + 'Table 2.1, https://advocacy.consumerreports.org/wp-content/uploads/2020/09/Maintenance-Cost-White-Paper-9.24.20.pdf';
 

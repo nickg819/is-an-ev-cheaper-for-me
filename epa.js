@@ -11,8 +11,7 @@ async function request(url, f) {
   return res.json();
 }
 
-// Real requests are cached by URL so a repeat pick is instant. A caller that
-// passes its own fetch (the tests) always goes through to that fetch.
+// cached by url. tests pass their own fetch and skip the cache
 function get(path, params = {}, f) {
   const query = new URLSearchParams(params).toString();
   const url = `${BASE}/${path}${query ? `?${query}` : ''}`;

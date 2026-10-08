@@ -43,7 +43,7 @@ function recompute() {
   announce(headline);
 }
 
-// Prefills the maintenance budget with the sourced estimate until the person types their own number.
+// prefill from the cited estimate until they type their own number
 function updateMaintenance(p) {
   const note = form.querySelector(`[data-total="${p}"]`);
   const box = field(p, 'maintenance');
@@ -63,7 +63,7 @@ function updateMaintenance(p) {
     box.value = Math.round(hint.perYear / 10) * 10;
     box.dataset.auto = '1';
   }
-  note.textContent = `Prefilled with an estimate of about ${money.format(hint.perYear)} a year, averaged over your ownership period. Edit it if you know better. ${hint.note} The survey does not say whether tires count, so enter them below and lower this if you count them here. Source: ${hint.source}.`;
+  note.textContent = `Estimate: about ${money.format(hint.perYear)} a year over the time you'll own it. Change it if you know better. ${hint.note} The survey doesn't say whether tires are in there, so add them below and trim this if you do. Source: ${hint.source}.`;
 }
 
 function markMaintenanceEdited(box) {
@@ -162,7 +162,7 @@ function wireInputs() {
   });
 }
 
-// Each box in the math columns drives one form field. Miles per kWh is stored as kWh per 100 miles.
+// the column boxes write through to the form. mi/kWh is stored as kWh per 100 mi
 const WORKING_BINDINGS = {
   gasPrice: ['gasPrice', (x) => x],
   mpg: ['car0_eff', (x) => x],

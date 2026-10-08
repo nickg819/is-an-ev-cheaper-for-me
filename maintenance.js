@@ -4,7 +4,7 @@ export function powertrainOf(atvType = '') {
   return 'gas';
 }
 
-// Dollars to cover the odometer span from start to end, pricing each mile at its band's rate.
+// cost of the miles between start and end, each priced at its band's rate
 function costOverSpan(bins, start, end) {
   let cost = 0;
   let lower = 0;
@@ -17,7 +17,7 @@ function costOverSpan(bins, start, end) {
   return cost;
 }
 
-// Average yearly cost over the whole ownership period, so a short lease and a long keep differ.
+// yearly average over the whole stretch you'll own it
 export function estimateTotal(totals, { powertrain, age, annualMiles, years }) {
   const t = totals && totals[powertrain];
   if (!t || !t.source || !t.asOf || !(annualMiles > 0) || !(years > 0)) return null;

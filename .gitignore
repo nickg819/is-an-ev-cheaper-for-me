@@ -2,3 +2,6 @@ node_modules/
 .DS_Store
 Thumbs.db
 .comps/
+PRODUCT.md
+DESIGN.md
+.impeccable/

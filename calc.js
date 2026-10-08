@@ -1,12 +1,4 @@
-/**
- * @typedef {{mode:'buy', price:number, taxRate:number, fees:number, downPayment:number,
- *   apr:number, loanMonths:number, resale:number, incentives:number}} BuyAcq
- * @typedef {{mode:'lease', payment:number, dueAtSigning:number, termMonths:number,
- *   turnInFee:number, incentives:number}} LeaseAcq
- * @typedef {{mode:'payments', monthlyPayment:number, monthsRemaining:number}} PaymentsAcq
- * @typedef {{mode:'owned'}} OwnedAcq
- * Rates (taxRate, apr, shares) are fractions, not percents.
- */
+// tax, apr and shares are fractions in here. the form works in percents.
 
 export const n = (v) => Number(v) || 0;
 const sum = (xs) => xs.reduce((a, b) => a + b, 0);
@@ -98,7 +90,7 @@ export function evEnergy({ kwhPer100, annualMiles, years, charging, freeShare = 
   return { kwh, atFast, atMix, actual: atMix * (1 - free) };
 }
 
-// A set is bought only once the car's miles reach a full set's life, so short or low-mileage ownership costs nothing.
+// whole sets only, bought once the miles are there
 function tireCost(tires, miles) {
   const setCost = n(tires && tires.setCost);
   const life = n(tires && tires.milesPerSet);

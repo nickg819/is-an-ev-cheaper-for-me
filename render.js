@@ -62,7 +62,7 @@ const staticValue = (key, label) => `<div class="n"><span data-v="${key}"></span
 const editableValue = (bind, aria, label) => `<div class="n">${numberInput(bind, aria)}<span class="l">${label}</span></div>`;
 const step = (left, op, right) => `<div class="step">${left}<span class="op">${op}</span>${right}</div>`;
 
-// The working markup is built once so the boxes inside it keep focus while you type.
+// built once so the boxes keep focus while you type
 function skeleton() {
   return `<div class="cols">
     <section class="col gas"><header class="display" data-v="gasTitle"></header>
@@ -145,7 +145,7 @@ export function renderErrors(resultEl, workingEl, errors) {
   resultEl.innerHTML = `<h2 class="headline display">Missing information</h2>
     <p class="sub">The result appears once these are filled in.</p>
     <ul class="todo">${shown}${more}</ul>`;
-  // Keep the working visible while you are typing in it, so clearing a box to retype does not lose focus.
+  // stay put while typing in it, or clearing a box would drop focus
   if (workingEl.contains(document.activeElement)) workingEl.classList.add('stale');
   else workingEl.hidden = true;
 }
