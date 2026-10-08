@@ -46,7 +46,7 @@ function readVehicle(fd, p) {
 function readCar(fd, p) {
   return {
     ...readVehicle(fd, p),
-    share: num(fd, `${p}_share`),
+    share: 1,
     mpg: num(fd, `${p}_eff`),
     sale: { on: on(fd, `${p}_sellOn`), value: num(fd, `${p}_sellValue`), payoff: num(fd, `${p}_sellPayoff`) },
   };
@@ -65,8 +65,6 @@ export function readInput(form) {
   const fd = new FormData(form);
   const annualMiles = num(fd, 'annualMiles');
   const kwhPer100 = num(fd, 'ev_eff');
-  const cars = [readCar(fd, 'car0')];
-  if (on(fd, 'car1_on')) cars.push(readCar(fd, 'car1'));
   return {
     gasPrice: num(fd, 'gasPrice'), annualMiles, years: num(fd, 'years'),
     charging: {
@@ -78,6 +76,6 @@ export function readInput(form) {
       homeCharger: { on: on(fd, 'charger_on'), cost: num(fd, 'charger_cost') },
     },
     ev: { ...readVehicle(fd, 'ev'), kwhPer100 },
-    cars,
+    cars: [readCar(fd, 'car0')],
   };
 }

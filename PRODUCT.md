@@ -12,7 +12,7 @@ Plain static HTML, CSS and vanilla JS ES modules. No build step, no framework, n
 
 ## Users
 
-The general public: people deciding whether to buy or lease an EV in place of one or two gas cars they own now. Many arrive on a phone, know little about EV running costs, and have not compared full ownership cost before. They are making a money decision for their household.
+The general public: people deciding whether to buy or lease an EV in place of a gas car they own now. Many arrive on a phone, know little about EV running costs, and have not compared full ownership cost before. They are making a money decision for their household.
 
 ## Product Purpose
 
@@ -20,7 +20,7 @@ Show what someone saves, or does not save, by owning an EV instead of the gas ca
 
 ## Positioning
 
-Full ownership cost, not fuel only, with the working shown. It handles the cases simple fuel calculators skip: buy or lease for the EV, up to two replaced cars with their own payments and maintenance, free charging at work or elsewhere, incentives, a home charger, and selling the old car. It reports where the savings come from and the gas price at which the two sides break even.
+Full ownership cost, not fuel only, with the working shown. It handles the cases simple fuel calculators skip: buy or lease for the EV, the replaced car with its own payments and maintenance, free charging at work or elsewhere, incentives, a home charger, and selling the old car. It reports where the savings come from and the gas price at which the two sides break even.
 
 ## Operating Context
 

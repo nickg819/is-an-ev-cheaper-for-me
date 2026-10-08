@@ -73,15 +73,13 @@ export function evFieldset() {
   </fieldset>`;
 }
 
-export function carFieldset(index) {
-  const p = `car${index}`;
-  const second = index === 1;
+export function carFieldset() {
+  const p = 'car0';
   return `
-  <fieldset class="card"${second ? ' data-second hidden' : ''}>
-    <legend>${second ? 'Second car it replaces' : 'The car it replaces'}</legend>
+  <fieldset class="card">
+    <legend>The car it replaces</legend>
     ${picker(p)}
     ${input(`${p}_eff`, 'Fuel economy', { unit: 'mpg', hint: 'Filled in from the EPA. Edit it if you track your own.' })}
-    ${input(`${p}_share`, 'Share of your miles', { unit: '%', value: second ? '' : '100', hint: 'Shares are scaled to add up, so 70 and 30 or 7 and 3 both work.' })}
     <div class="radios" role="group" aria-label="How you pay for it">${radio(p, 'owned', 'Owned outright', true)}${radio(p, 'payments', 'Payments', false)}${radio(p, 'lease', 'Lease', false)}</div>
     ${paymentsPanel(p)}${leasePanel(p)}
     ${input(`${p}_insurance`, 'Insurance per year', { unit: '$' })}

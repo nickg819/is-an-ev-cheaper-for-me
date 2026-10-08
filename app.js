@@ -11,7 +11,7 @@ const resultEl = document.querySelector('#result');
 const workingEl = document.querySelector('#working');
 const peekEl = document.querySelector('#peek');
 const announceEl = document.querySelector('#announce');
-const PICKERS = ['ev', 'car0', 'car1'];
+const PICKERS = ['ev', 'car0'];
 const LEVELS = ['year', 'make', 'model', 'option'];
 const ANNOUNCE_DELAY_MS = 700;
 const vehicles = {};
@@ -127,18 +127,6 @@ function toggleHidden(selector, hidden) {
   if (el) el.hidden = hidden;
 }
 
-function splitMilesBetweenTwoCars(two) {
-  const [first, second] = [field('car0', 'share'), field('car1', 'share')];
-  if (two && !second.value) {
-    first.value = 50;
-    second.value = 50;
-  }
-  if (!two && Number(first.value) === 50) {
-    first.value = 100;
-    second.value = '';
-  }
-}
-
 function wireToggles() {
   form.addEventListener('change', (e) => {
     const t = e.target;
@@ -147,10 +135,6 @@ function wireToggles() {
       form.querySelectorAll(`[data-for="${p}"]`).forEach((el) => { el.hidden = el.dataset.mode !== t.value; });
     }
     if (t.dataset.reveals) toggleHidden(t.dataset.reveals, !t.checked);
-    if (t.name === 'car1_on') {
-      splitMilesBetweenTwoCars(t.checked);
-      recompute();
-    }
   });
 }
 
@@ -231,7 +215,7 @@ async function loadYears() {
 
 async function init() {
   document.querySelector('#ev-slot').innerHTML = evFieldset();
-  document.querySelector('#car-slot').innerHTML = carFieldset(0) + carFieldset(1);
+  document.querySelector('#car-slot').innerHTML = carFieldset();
   PICKERS.forEach(wirePicker);
   wireToggles();
   wireInputs();

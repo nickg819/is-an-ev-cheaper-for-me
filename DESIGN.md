@@ -214,8 +214,7 @@ Square. Every container (result, columns, bars panel, table, cards, groups, tabs
 Sky Cream block with the display headline; the saving or extra cost sits in a flat teal block (the amount block, white text, no radius) inline in the sentence. Below it a plain sub-line with bold figures. On phone it inverts to the night card with two white-on-fill totals bordered by a 1px On Night line.
 
 ### Math columns
-Two bordered cards, one per side. A solid fill header in caps display type, two rows of "value, operator, value" with small captions, and a solid fill output row with the yearly cost. Miles per gallon, gas price and miles per kWh are editable boxes that drive the matching form fields; every other value is text. With two old cars the blended mpg is read-only.
-
+Two bordered cards, one per side. A solid fill header in caps display type, two rows of "value, operator, value" with small captions, and a solid fill output row with the yearly cost. Miles per gallon, gas price and miles per kWh are editable boxes that drive the matching form fields; every other value is text.
 ### Bars panel
 Title, then two bars drawn as solid fills with the dollar total above and the label below, sitting on a 1px Line Strong axis.
 
