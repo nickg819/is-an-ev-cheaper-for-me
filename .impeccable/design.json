@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-08T00:00:00Z",
+  "title": "Design System: Is an EV Cheaper for Me?",
+  "extensions": {
+    "colorMeta": {
+      "forest-teal": { "role": "primary", "displayName": "Forest Teal", "canonical": "#1b4440", "tonalRamp": ["#0a1a18", "#10302c", "#1b4440", "#2f7a70", "#5a9f95", "#8fc0b8", "#bfdcd7", "#e3f0ee"] },
+      "brick-peach": { "role": "secondary", "displayName": "Brick Peach", "canonical": "#a96353", "tonalRamp": ["#3a1f1a", "#5e362e", "#7f4a3f", "#a96353", "#c08577", "#d5a89d", "#e8cbc3", "#f6e8e4"] },
+      "sky-paper": { "role": "neutral", "displayName": "Sky Paper", "canonical": "#dff0f9", "tonalRamp": ["#12202a", "#3d5463", "#6f8c9c", "#a9c1ce", "#c4dbe7", "#dff0f9", "#f6fbfe", "#ffffff"] },
+      "cool-ink": { "role": "neutral", "displayName": "Cool Ink", "canonical": "#12202a", "tonalRamp": ["#070d11", "#12202a", "#243846", "#3d5463", "#5b7a8c", "#6f8c9c", "#a9c1ce", "#e8f1f6"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The result sentence. Archivo at font-stretch 68%, weight 800, all caps." },
+      "headline-section": { "displayName": "Section title", "purpose": "Legends, bars title, column headers, brand line." },
+      "numeral": { "displayName": "Numeral", "purpose": "Math and bar values, tabular figures." },
+      "body": { "displayName": "Body", "purpose": "Sub-line and footer." },
+      "label": { "displayName": "Label", "purpose": "Form field labels." },
+      "note": { "displayName": "Note", "purpose": "Hints, units, captions." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "result-fade", "value": "background-color .2s ease-out", "purpose": "Result block color change on the phone, only when reduced motion is not requested." }
+    ],
+    "breakpoints": [
+      { "name": "phone", "value": "max-width: 760px" },
+      { "name": "wide", "value": "min-width: 761px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Result headline",
+      "kind": "custom",
+      "refersTo": "amount-block",
+      "description": "The answer sentence with the amount in a flat teal block.",
+      "html": "<h2 class=\"ds-headline\">The EV saves you <span class=\"ds-amount\">$2,400</span> over 3 years.</h2>",
+      "css": ".ds-headline { margin: 0; font-family: Archivo, 'Arial Narrow', sans-serif; font-weight: 800; font-stretch: 68%; text-transform: uppercase; letter-spacing: .015em; font-size: 40px; line-height: 1.12; color: #12202a; } .ds-amount { display: inline-block; padding: 0 .22em; background: #1b4440; color: #fff; }"
+    },
+    {
+      "name": "Math column",
+      "kind": "card",
+      "refersTo": "column-ev-header",
+      "description": "One side of the comparison: filled header, a working row, filled output.",
+      "html": "<section class=\"ds-col\"><header>EV</header><div class=\"ds-step\"><div class=\"ds-n\">12,000<span>miles a year</span></div><span class=\"ds-op\">&divide;</span><div class=\"ds-n\">3.6<span>miles per kWh</span></div></div><div class=\"ds-out\"><div class=\"ds-n\">$900</div><span>charging a year</span></div></section>",
+      "css": ".ds-col { background: #f6fbfe; border: 1px solid #a9c1ce; overflow: hidden; font-family: Archivo, sans-serif; } .ds-col header { padding: 9px 14px; background: #1b4440; color: #fff; font-weight: 800; font-stretch: 68%; text-transform: uppercase; font-size: 20px; letter-spacing: .04em; } .ds-step { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 8px; padding: 12px 14px; border-bottom: 1px solid #a9c1ce; } .ds-n { display: grid; gap: 2px; font-size: 24px; font-weight: 700; line-height: 1.05; font-variant-numeric: tabular-nums; color: #12202a; } .ds-n span { font-size: 12px; font-weight: 600; color: #3d5463; } .ds-op { padding-bottom: 12px; font-size: 22px; font-weight: 800; } .ds-out { padding: 12px 14px; background: #1b4440; color: #fff; } .ds-out .ds-n { color: #fff; font-size: 30px; } .ds-out span { font-size: 12px; font-weight: 600; }"
+    },
+    {
+      "name": "Number input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Square 46px field with a visible label and unit.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-label\">Gas price <em>$ per gallon</em></span><input class=\"ds-input\" type=\"number\" placeholder=\"3.50\"></label>",
+      "css": ".ds-field { display: grid; gap: 4px; font-family: Archivo, sans-serif; } .ds-label { font-size: 13px; font-weight: 700; color: #12202a; } .ds-label em { font-style: normal; font-size: 12px; font-weight: 600; color: #3d5463; } .ds-input { width: 100%; min-height: 46px; padding: 10px 12px; font: 700 18px Archivo, sans-serif; color: #12202a; background: #fff; border: 1px solid #6f8c9c; border-radius: 0; box-sizing: border-box; } .ds-input:focus-visible { outline: 2px solid #12202a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Phone tab",
+      "kind": "nav",
+      "refersTo": "tab",
+      "description": "Square 44px section tab; selected state fills with night and white text.",
+      "html": "<button class=\"ds-tab\" type=\"button\">Basics</button><button class=\"ds-tab ds-tab-on\" type=\"button\">EV</button>",
+      "css": ".ds-tab { min-height: 44px; padding: 9px 12px; background: #f6fbfe; color: #12202a; border: 1px solid #6f8c9c; border-radius: 0; font: 800 13px Archivo, sans-serif; letter-spacing: .04em; text-transform: uppercase; } .ds-tab-on { background: #12202a; color: #fff; border-color: #12202a; } .ds-tab:focus-visible { outline: 2px solid #12202a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Breakdown table",
+      "kind": "custom",
+      "refersTo": "table-cell",
+      "description": "Labeled rows with signed tabular amounts and a ruled total.",
+      "html": "<table class=\"ds-table\"><tbody><tr><th>Maintenance</th><td class=\"ds-pos\">$600</td></tr><tr><th>Insurance</th><td class=\"ds-neg\">-$150</td></tr><tr class=\"ds-total\"><th>Total</th><td class=\"ds-pos\">$450</td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; border-collapse: collapse; background: #f6fbfe; border: 1px solid #a9c1ce; font-family: Archivo, sans-serif; color: #12202a; } .ds-table th, .ds-table td { padding: 10px 14px; border-top: 1px solid #a9c1ce; text-align: left; font-weight: 600; } .ds-table tr:first-child th, .ds-table tr:first-child td { border-top: 0; } .ds-table td { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-pos { color: #1b5e20; } .ds-neg { color: #9c1c12; } .ds-total th, .ds-total td { border-top: 1px solid #6f8c9c; font-weight: 800; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Itemized Receipt",
+    "overview": "The page states the answer in one sentence and then shows every line of the working. It is flat and square: thin 1px cool lines, no radii on containers, no shadows, no badge or starburst, and a faint paper grain over a sky-blue ground. Condensed all-caps Archivo carries the headline and section titles. Color is a code, not decoration: teal always means EV, brick peach always means gas.",
+    "keyCharacteristics": [
+      "Answer first; working shown below it in the same flat vocabulary.",
+      "Square corners on every container; 1px lines in place of heavy outlines.",
+      "Two fills carry meaning (teal EV, peach gas), each always with white text.",
+      "Condensed caps display type; tabular numerals for money.",
+      "Light and dark schemes that follow the system setting."
+    ],
+    "rules": [
+      { "name": "The Two-Fill Rule", "body": "Teal means EV and peach means gas, on every surface, in both schemes. No third saturated fill exists; do not introduce one for emphasis.", "section": "colors" },
+      { "name": "The White-On-Color Rule", "body": "Every colored fill carries white text. Never place dark text on teal, peach or night. If a fill fails contrast, darken the fill, not the text.", "section": "colors" },
+      { "name": "The Signed-Number Rule", "body": "Green and red appear only on positive and negative dollar values in the breakdown table, never as decoration or as brand color.", "section": "colors" },
+      { "name": "The Condensed-Caps-For-Headings Rule", "body": "Headings and legends use the display treatment; body, labels and numbers never do. Money always uses tabular numerals.", "section": "typography" },
+      { "name": "The Flat-On-Paper Rule", "body": "Surfaces are separated by tone and a 1px line, never by a shadow or a thick outline.", "section": "elevation" },
+      { "name": "The Square-Container Rule", "body": "No radius on any container or control box. Native radio and checkbox glyphs are the only rounded shapes.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do put the answer sentence first and show the working directly beneath it.",
+      "Do use teal for EV and peach for gas everywhere, with white text on both.",
+      "Do keep every container square and every line 1px.",
+      "Do use the display treatment (caps, 68% stretch, 800) for headings and legends only.",
+      "Do use tabular numerals for all money and counts.",
+      "Do keep personality to help text and empty states; keep labels and headings literal.",
+      "Do darken a failing fill rather than switching its text to dark."
+    ],
+    "donts": [
+      "Don't add a hero stat tile, rounded card, badge, starburst, pill or shadow.",
+      "Don't use thick black outlines to separate blocks.",
+      "Don't put dark text on teal, peach or night.",
+      "Don't use green or red outside signed values in the table.",
+      "Don't add a third saturated fill."
+    ]
+  }
+}
