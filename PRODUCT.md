@@ -37,7 +37,7 @@ A long form with a live result. People fill in what they know and leave optional
 
 ## Brand Commitments
 
-No name, logo or brand. The page credits the EPA's fueleconomy.gov and the maintenance sources in the footer. It is a personal project. Copy is plain and factual. Personality, where there is any, lives in empty states and help text, never in labels or headings.
+No name, logo or brand. The page credits the EPA's fueleconomy.gov and the maintenance sources in the footer. It is a personal project. Copy is plain and factual. Personality, where there is any, lives in help text, never in labels or headings. Headings and labels name the thing and avoid pronouns.
 
 ## Evidence on Hand
 

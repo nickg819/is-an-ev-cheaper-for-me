@@ -121,7 +121,7 @@ function fillWorking(el, r, input) {
   text('evYear', money.format(r.ev.energy / input.years));
   text('gasPerMile', `gas a year, ${cents(r.iceEnergyPerMile)} a mile`);
   text('evPerMile', `charging a year, ${cents(r.evEnergyPerMile)} a mile`);
-  text('barsTitle', `${yearsText(input.years)}, everything counted`);
+  text('barsTitle', `Total cost over ${yearsText(input.years)}`);
   box('mpg', trim(mpg, 2), input.cars.length > 1);
   box('gasPrice', input.gasPrice);
   box('mikwh', trim(100 / input.ev.kwhPer100, 2));
@@ -141,8 +141,8 @@ export function renderResult(resultEl, workingEl, r, input) {
 export function renderErrors(resultEl, workingEl, errors) {
   const shown = errors.slice(0, ERRORS_SHOWN).map((e) => `<li>${e.message}</li>`).join('');
   const more = errors.length > ERRORS_SHOWN ? `<li>And ${errors.length - ERRORS_SHOWN} more.</li>` : '';
-  resultEl.innerHTML = `<h2 class="headline display">Not enough to go on yet.</h2>
-    <p class="sub">Fill in the required fields and the answer shows up here.</p>
+  resultEl.innerHTML = `<h2 class="headline display">Missing information</h2>
+    <p class="sub">The result appears once these are filled in.</p>
     <ul class="todo">${shown}${more}</ul>`;
   // Keep the working visible while you are typing in it, so clearing a box to retype does not lose focus.
   if (workingEl.contains(document.activeElement)) workingEl.classList.add('stale');

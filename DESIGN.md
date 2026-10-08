@@ -250,6 +250,7 @@ Native radios and checkboxes, 24px, teal accent, in 44px rows with bold labels.
 - **Don't** put dark text on teal, peach or night.
 - **Don't** use green or red outside signed values in the table.
 - **Don't** add a third saturated fill.
+- **Don't** write headings or labels in first or second person, or as descriptive clauses ("The EV you are considering"). A heading names the thing: EV, Old car, Charging.
 
 ## Known open items
 

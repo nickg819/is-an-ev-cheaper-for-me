@@ -62,7 +62,7 @@ export function evFieldset() {
   const p = 'ev';
   return `
   <fieldset class="card">
-    <legend>The EV you are considering</legend>
+    <legend>EV</legend>
     ${picker(p)}
     ${input(`${p}_eff`, 'Energy use', { unit: 'kWh per 100 mi', hint: 'Filled in from the EPA. It is wall energy, what the utility bills.' })}
     <div class="radios" role="group" aria-label="Buy or lease">${radio(p, 'buy', 'Buy', true)}${radio(p, 'lease', 'Lease', false)}</div>
@@ -77,7 +77,7 @@ export function carFieldset() {
   const p = 'car0';
   return `
   <fieldset class="card">
-    <legend>The car it replaces</legend>
+    <legend>Old car</legend>
     ${picker(p)}
     ${input(`${p}_eff`, 'Fuel economy', { unit: 'mpg', hint: 'Filled in from the EPA. Edit it if you track your own.' })}
     <div class="radios" role="group" aria-label="How you pay for it">${radio(p, 'owned', 'Owned outright', true)}${radio(p, 'payments', 'Payments', false)}${radio(p, 'lease', 'Lease', false)}</div>
@@ -85,7 +85,7 @@ export function carFieldset() {
     ${input(`${p}_insurance`, 'Insurance per year', { unit: '$' })}
     ${input(`${p}_registration`, 'Registration per year', { unit: '$' })}
     ${maintenance(p)}
-    <label class="check"><input type="checkbox" name="${p}_sellOn" data-reveals='[data-sale="${p}"]'> I am selling this car</label>
+    <label class="check"><input type="checkbox" name="${p}_sellOn" data-reveals='[data-sale="${p}"]'> Selling this car</label>
     <div class="panel" data-sale="${p}" hidden>
       ${input(`${p}_sellValue`, 'Sale price', { unit: '$' })}
       ${input(`${p}_sellPayoff`, 'Loan payoff', { unit: '$', hint: 'What you still owe on it, if anything.' })}
