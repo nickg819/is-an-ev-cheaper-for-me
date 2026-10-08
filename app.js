@@ -48,8 +48,9 @@ function updateMaintenance(p) {
   const note = form.querySelector(`[data-total="${p}"]`);
   const box = field(p, 'maintenance');
   const v = vehicles[p];
-  const hint = p !== 'ev' && !v ? null : estimateTotal(TOTALS, {
-    powertrain: p === 'ev' ? 'ev' : powertrainOf(v.atvType),
+  const guessed = p !== 'ev' && !v;
+  const hint = estimateTotal(TOTALS, {
+    powertrain: p === 'ev' ? 'ev' : v ? powertrainOf(v.atvType) : 'gas',
     age: v ? new Date().getFullYear() - v.year : 0,
     annualMiles: n(form.elements.annualMiles.value),
     years: n(form.elements.years.value),
@@ -63,7 +64,8 @@ function updateMaintenance(p) {
     box.value = Math.round(hint.perYear / 10) * 10;
     box.dataset.auto = '1';
   }
-  note.textContent = `Estimate: about ${money.format(hint.perYear)} a year over the time you'll own it. Change it if you know better. ${hint.note} The survey doesn't say whether tires are in there, so add them below and trim this if you do. Source: ${hint.source}.`;
+  const assumed = guessed ? 'Assuming a gas car with about the same miles until you pick yours. ' : '';
+  note.textContent = `${assumed}Estimate: about ${money.format(hint.perYear)} a year over the time you'll own it. Change it if you know better. ${hint.note} The survey doesn't say whether tires are in there, so add them below and trim this if you do. Source: ${hint.source}.`;
 }
 
 function markMaintenanceEdited(box) {

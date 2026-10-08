@@ -76,7 +76,7 @@ body { margin: 0; background: var(--paper); background-image: var(--grain); colo
 
 .working { display: grid; gap: var(--gap); }
 .cols, .monthly { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
-.col { overflow: hidden; }
+.col { display: flex; flex-direction: column; overflow: hidden; }
 .col header { padding: var(--row-y) var(--row-x); color: #fff; font-size: 20px; letter-spacing: .04em; }
 .gas header, .gas .out, .mini .gas, .monthly .gas, .bar.gas i { background: var(--gas); }
 .ev header, .ev .out, .mini .ev, .monthly .ev, .bar.ev i { background: var(--ev); }
@@ -88,7 +88,7 @@ body { margin: 0; background: var(--paper); background-image: var(--grain); colo
 .n input { min-height: 0; padding: var(--s1) var(--s2); font: inherit; }
 .n input[readonly] { padding-left: 0; background: transparent; border-color: transparent; }
 .working.stale { opacity: .55; }
-.out { padding: var(--row-y) var(--row-x); color: #fff; }
+.out { flex: 1; padding: var(--row-y) var(--row-x); color: #fff; }
 .out .n { font-size: 30px; }
 .out .l { color: #fff; }
 
@@ -137,7 +137,7 @@ input[type="number"], select {
 input::placeholder { color: var(--ink-2); font-weight: 500; opacity: .8; }
 select:disabled { opacity: .55; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-.picker { display: grid; gap: var(--s3); grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.picker { display: grid; gap: var(--s3); grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .picker .note { grid-column: 1 / -1; }
 .panel { display: grid; gap: var(--s3); grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
 .radios { display: flex; gap: var(--s5); flex-wrap: wrap; }
@@ -164,6 +164,7 @@ footer p { margin: 0; }
   .mini small { display: block; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
   .mini strong { font-size: 24px; font-weight: 800; font-stretch: 78%; line-height: 1.1; }
   .cols { grid-template-columns: 1fr; }
+  .picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tabs { display: flex; flex-wrap: wrap; gap: var(--s2); }
   [role="tab"] {
     flex: 1 1 auto; min-height: 44px; padding: var(--s2) var(--s3); background: var(--cream); color: var(--ink);
