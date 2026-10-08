@@ -25,20 +25,22 @@
       <h1 class="display">Is an EV cheaper for me?</h1>
     </header>
 
-    <section id="result" class="result" aria-live="polite"></section>
+    <p id="peek" class="peek" aria-hidden="true" hidden></p>
+    <p id="announce" class="sr" role="status"></p>
+    <section id="result" class="result"></section>
     <div id="working" class="working"></div>
 
     <div class="entry">
       <nav class="tabs" role="tablist" aria-label="Sections of the form">
-        <button type="button" role="tab" data-tab="basics" aria-controls="panel-basics">Basics</button>
-        <button type="button" role="tab" data-tab="ev" aria-controls="panel-ev">EV</button>
-        <button type="button" role="tab" data-tab="old" aria-controls="panel-old">Old car</button>
-        <button type="button" role="tab" data-tab="charging" aria-controls="panel-charging">Charging</button>
-        <button type="button" role="tab" data-tab="optional" aria-controls="panel-optional">Optional</button>
+        <button type="button" role="tab" id="tab-basics" data-tab="basics" aria-controls="panel-basics">Basics</button>
+        <button type="button" role="tab" id="tab-ev" data-tab="ev" aria-controls="panel-ev">EV</button>
+        <button type="button" role="tab" id="tab-old" data-tab="old" aria-controls="panel-old">Old car</button>
+        <button type="button" role="tab" id="tab-charging" data-tab="charging" aria-controls="panel-charging">Charging</button>
+        <button type="button" role="tab" id="tab-optional" data-tab="optional" aria-controls="panel-optional">Optional</button>
       </nav>
 
       <form id="calc" autocomplete="off">
-        <section id="panel-basics" class="tabpanel" role="tabpanel" data-panel="basics">
+        <section id="panel-basics" class="tabpanel" role="tabpanel" aria-labelledby="tab-basics" data-panel="basics">
           <fieldset class="card">
             <legend>The basics</legend>
             <label class="field"><span class="label">Gas price <em>$ per gallon</em></span><input name="gasPrice" type="number" inputmode="decimal" min="0" step="any"></label>
@@ -47,14 +49,14 @@
           </fieldset>
         </section>
 
-        <section id="panel-ev" class="tabpanel" role="tabpanel" data-panel="ev"><div id="ev-slot"></div></section>
+        <section id="panel-ev" class="tabpanel" role="tabpanel" aria-labelledby="tab-ev" data-panel="ev"><div id="ev-slot"></div></section>
 
-        <section id="panel-old" class="tabpanel" role="tabpanel" data-panel="old">
-          <div id="car-slot"></div>
+        <section id="panel-old" class="tabpanel" role="tabpanel" aria-labelledby="tab-old" data-panel="old">
           <label class="check"><input type="checkbox" name="car1_on"> It replaces two cars</label>
+          <div id="car-slot"></div>
         </section>
 
-        <section id="panel-charging" class="tabpanel" role="tabpanel" data-panel="charging">
+        <section id="panel-charging" class="tabpanel" role="tabpanel" aria-labelledby="tab-charging" data-panel="charging">
           <fieldset class="card">
             <legend>Charging</legend>
             <label class="field"><span class="label">Home electricity <em>$ per kWh</em></span><input name="homeRate" type="number" inputmode="decimal" min="0" step="any"></label>
@@ -64,7 +66,7 @@
           </fieldset>
         </section>
 
-        <section id="panel-optional" class="tabpanel" role="tabpanel" data-panel="optional">
+        <section id="panel-optional" class="tabpanel" role="tabpanel" aria-labelledby="tab-optional" data-panel="optional">
           <fieldset class="card">
             <legend>Optional</legend>
             <label class="check"><input type="checkbox" name="free_on"> I get free charging somewhere</label>

@@ -26,19 +26,24 @@ function headline(r, years) {
     : `The EV costs you <span class="amount">${amount}</span> more over ${yearsText(years)}.`;
 }
 
-function subline(r, input) {
-  const monthly = money.format(Math.abs(r.perMonth));
-  const lead = r.savings === 0 ? '' : `About <b>${monthly} a month</b>. `;
-  if (r.breakEvenGasPrice == null || r.breakEvenGasPrice <= 0) return lead.trim();
+const gasLabel = (count) => (count > 1 ? 'Gas cars' : 'Gas car');
+
+function subline(r) {
+  if (Math.abs(r.savings) < 0.5) return '';
+  const per = `<b>${money.format(Math.abs(r.perMonth))} a month</b>, ${money.format(Math.abs(r.perYear))} a year, ${cents(Math.abs(r.perMile))} a mile.`;
+  if (r.breakEvenGasPrice == null) return per;
+  if (r.breakEvenGasPrice <= 0) {
+    return r.savings > 0 ? `${per} The EV saves money even if gas were free.` : per;
+  }
   const p = price.format(r.breakEvenGasPrice);
   return r.savings > 0
-    ? `${lead}If gas drops below <b>${p} a gallon</b>, the EV stops saving you money.`
-    : `${lead}If gas climbs above <b>${p} a gallon</b>, the EV starts saving you money.`;
+    ? `${per} If gas drops below <b>${p} a gallon</b>, the EV stops saving you money.`
+    : `${per} If gas climbs above <b>${p} a gallon</b>, the EV starts saving you money.`;
 }
 
-function tiles(r) {
+function tiles(r, count) {
   return `<div class="mini">
-    <div class="gas"><small>Gas cars</small><strong>${money.format(r.ice.total)}</strong></div>
+    <div class="gas"><small>${gasLabel(count)}</small><strong>${money.format(r.ice.total)}</strong></div>
     <div class="ev"><small>EV</small><strong>${money.format(r.ev.total)}</strong></div></div>`;
 }
 
@@ -50,8 +55,7 @@ function step(leftNum, leftLabel, op, rightNum, rightLabel) {
 function gasColumn(r, input) {
   const perYear = r.gallons / input.years;
   const mpg = perYear > 0 ? input.annualMiles / perYear : 0;
-  const title = input.cars.length > 1 ? 'Gas cars' : 'Gas car';
-  return `<section class="col gas"><header class="display">${title}</header>
+  return `<section class="col gas"><header class="display">${gasLabel(input.cars.length)}</header>
     ${step(whole.format(input.annualMiles), 'miles a year', '&divide;', mpg.toFixed(1), 'miles per gallon')}
     ${step(whole.format(perYear), 'gallons a year', '&times;', price.format(input.gasPrice), 'per gallon')}
     <div class="out"><div class="n">${money.format(r.ice.energy / input.years)}</div>
@@ -73,7 +77,7 @@ function bars(r, input) {
   const h = (v) => Math.round((Math.max(v, 0) / top) * 100);
   return `<section class="bars-wrap"><h3 class="display">${yearsText(input.years)}, everything counted</h3>
     <div class="bars">
-      <div class="bar gas"><strong>${money.format(r.ice.total)}</strong><i style="--p:${h(r.ice.total)}"></i><span>${input.cars.length > 1 ? 'Gas cars' : 'Gas car'}</span></div>
+      <div class="bar gas"><strong>${money.format(r.ice.total)}</strong><i style="--p:${h(r.ice.total)}"></i><span>${gasLabel(input.cars.length)}</span></div>
       <div class="bar ev"><strong>${money.format(r.ev.total)}</strong><i style="--p:${h(r.ev.total)}"></i><span>EV</span></div>
     </div><div class="axis"></div></section>`;
 }
@@ -86,15 +90,16 @@ function breakdownTable(r, years) {
       return `<tr><th scope="row">${label}</th><td class="${v < 0 ? 'neg' : 'pos'}">${signed(v)}</td></tr>`;
     })
     .join('');
-  return `<table><caption>Where the ${yearsText(years)} difference comes from. Positive means the EV saves you money.</caption>
-    <tbody>${rows}</tbody></table>`;
+  const total = `<tr class="total"><th scope="row">Total</th><td class="${r.savings < 0 ? 'neg' : 'pos'}">${signed(r.savings)}</td></tr>`;
+  return `<table><caption>Where the ${years}-year difference comes from. Positive means the EV saves you money.</caption>
+    <tbody>${rows}${total}</tbody></table>`;
 }
 
 export function renderResult(resultEl, workingEl, r, input) {
   const lease = r.leaseTerms.ev > 1
     ? `<p class="note">Your ownership period is longer than one lease, so this counts ${r.leaseTerms.ev} back-to-back leases.</p>` : '';
   resultEl.innerHTML = `<h2 class="headline display">${headline(r, input.years)}</h2>
-    <p class="sub">${subline(r, input)}</p>${tiles(r)}`;
+    <p class="sub">${subline(r)}</p>${tiles(r, input.cars.length)}`;
   workingEl.innerHTML = `<div class="cols">${gasColumn(r, input)}${evColumn(r, input)}</div>
     ${bars(r, input)}${breakdownTable(r, input.years)}${lease}`;
 }

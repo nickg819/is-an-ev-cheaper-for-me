@@ -180,27 +180,70 @@ export function compare(input) {
 }
 
 const MAX_TAX = 0.2;
-const MIN_REAL_TAX = 0.005;
+const MIN_REAL_RATE = 0.005;
+const MAX_APR = 0.3;
 
-const plausibleTax = (rate) => rate === 0 || (rate >= MIN_REAL_TAX && rate <= MAX_TAX);
+const plausibleTax = (rate) => rate === 0 || (rate >= MIN_REAL_RATE && rate <= MAX_TAX);
+const plausibleApr = (rate) => rate === 0 || (rate >= MIN_REAL_RATE && rate <= MAX_APR);
 
-function checkAcquisition(a, prefix, need) {
-  if (a.mode === 'buy') {
-    need(n(a.price) >= 0, `${prefix}.price`, 'Price cannot be negative.');
-    need(plausibleTax(n(a.taxRate)), `${prefix}.taxRate`,
-      'Enter the sales tax as a percent, like 9.25, not a fraction.');
-    need(n(a.apr) === 0 || n(a.loanMonths) > 0, `${prefix}.loanMonths`, 'Enter the loan length in months.');
-  }
-  if (a.mode === 'lease') {
-    need(n(a.termMonths) > 0, `${prefix}.termMonths`, 'Enter the lease term in months.');
-    need(n(a.payment) >= 0, `${prefix}.payment`, 'Payment cannot be negative.');
+const BUY_FIELDS = [['fees', 'Fees'], ['downPayment', 'Down payment'], ['resale', 'Resale value'], ['incentives', 'Incentives'], ['loanMonths', 'Loan length']];
+const LEASE_FIELDS = [['dueAtSigning', 'Due at signing'], ['turnInFee', 'Turn-in fee'], ['incentives', 'Incentives']];
+const MAINTENANCE_FIELDS = [['oil', 'Oil and fluids'], ['tires', 'Tires'], ['brakes', 'Brakes'], ['repairs', 'Repairs']];
+
+function nonNegative(obj, list, prefix, who, need) {
+  for (const [key, name] of list) {
+    need(n(obj[key]) >= 0, `${prefix}.${key}`, `${who}: ${name} cannot be negative.`);
   }
 }
 
-function checkVehicle(v, prefix, need) {
-  need(n(v.insurance) >= 0, `${prefix}.insurance`, 'Insurance cannot be negative.');
-  need(n(v.registration) >= 0, `${prefix}.registration`, 'Registration cannot be negative.');
-  checkAcquisition(v.acquisition, prefix, need);
+function checkBuy(a, prefix, who, need) {
+  need(n(a.price) > 0, `${prefix}.price`, `${who}: Enter the price.`);
+  need(plausibleTax(n(a.taxRate)), `${prefix}.taxRate`, `${who}: Enter the sales tax as a percent, like 9.25.`);
+  need(plausibleApr(n(a.apr)), `${prefix}.apr`, `${who}: Enter the loan APR as a percent, like 5.9.`);
+  need(n(a.apr) === 0 || n(a.loanMonths) > 0, `${prefix}.loanMonths`, `${who}: Enter the loan length in months.`);
+  nonNegative(a, BUY_FIELDS, prefix, who, need);
+}
+
+function checkLease(a, prefix, who, need) {
+  need(n(a.payment) > 0, `${prefix}.payment`, `${who}: Enter the monthly payment.`);
+  need(n(a.termMonths) > 0, `${prefix}.termMonths`, `${who}: Enter the lease term in months.`);
+  nonNegative(a, LEASE_FIELDS, prefix, who, need);
+}
+
+function checkAcquisition(a, prefix, who, need) {
+  if (a.mode === 'buy') checkBuy(a, prefix, who, need);
+  if (a.mode === 'lease') checkLease(a, prefix, who, need);
+  if (a.mode === 'payments') {
+    nonNegative(a, [['monthlyPayment', 'Monthly payment'], ['monthsRemaining', 'Months left']], prefix, who, need);
+  }
+}
+
+function checkVehicle(v, prefix, who, need) {
+  nonNegative(v, [['insurance', 'Insurance'], ['registration', 'Registration']], prefix, who, need);
+  nonNegative(v.maintenance || {}, MAINTENANCE_FIELDS, `${prefix}.maintenance`, who, need);
+  const mult = v.maintenance && v.maintenance.repairsMultiplier;
+  need(mult == null || n(mult) >= 0, `${prefix}.repairsMultiplier`, `${who}: The repairs multiplier cannot be negative.`);
+  checkAcquisition(v.acquisition, prefix, who, need);
+}
+
+function checkCar(c, i, count, need) {
+  const prefix = `cars[${i}]`;
+  const who = count > 1 ? `Old car ${i + 1}` : 'Old car';
+  need(n(c.mpg) > 0, `${prefix}.mpg`, `${who}: Enter the miles per gallon.`);
+  need(n(c.share) >= 0, `${prefix}.share`, `${who}: The share of miles cannot be negative.`);
+  if (c.sale && c.sale.on) nonNegative(c.sale, [['value', 'Sale price'], ['payoff', 'Loan payoff']], `${prefix}.sale`, who, need);
+  checkVehicle(c, prefix, who, need);
+}
+
+function checkCharging(input, need) {
+  const { homeRate, fastRate, homeShare, fastShare } = input.charging;
+  need(n(homeShare) >= 0 && n(fastShare) >= 0, 'charging.share', 'Charging shares cannot be negative.');
+  need(n(homeShare) + n(fastShare) > 0 || freeShareOf(input) >= 1, 'charging.share',
+    'Enter how much charging is home and how much is fast charging.');
+  need(n(homeRate) >= 0 && (n(homeShare) <= 0 || n(homeRate) > 0), 'charging.homeRate', 'Enter the home electricity rate.');
+  need(n(fastRate) >= 0 && (n(fastShare) <= 0 || n(fastRate) > 0), 'charging.fastRate', 'Enter the fast charging rate.');
+  const charger = input.options && input.options.homeCharger;
+  if (charger && charger.on) need(n(charger.cost) >= 0, 'options.homeCharger', 'Home charger cost cannot be negative.');
 }
 
 export function validate(input) {
@@ -209,15 +252,10 @@ export function validate(input) {
   need(n(input.gasPrice) > 0, 'gasPrice', 'Enter the gas price per gallon.');
   need(n(input.annualMiles) > 0, 'annualMiles', 'Enter the miles you drive in a year.');
   need(n(input.years) > 0, 'years', 'Enter how many years you will keep the car.');
-  need(n(input.ev.kwhPer100) > 0, 'ev.kwhPer100', 'Enter the EV energy use in kWh per 100 miles.');
-  checkVehicle(input.ev, 'ev', need);
-  input.cars.forEach((c, i) => {
-    need(n(c.mpg) > 0, `cars[${i}].mpg`, 'Enter the miles per gallon.');
-    checkVehicle(c, `cars[${i}]`, need);
-  });
-  need(sum(input.cars.map((c) => n(c.share))) > 0, 'cars.share', 'Give at least one car a share of the miles.');
-  const paid = n(input.charging.homeShare) + n(input.charging.fastShare);
-  need(paid > 0 || freeShareOf(input) >= 1, 'charging.share', 'Enter how much charging is home and how much is fast charging.');
-  need(n(input.charging.homeRate) >= 0 && n(input.charging.fastRate) >= 0, 'charging.rate', 'Charging rates cannot be negative.');
+  need(n(input.ev.kwhPer100) > 0, 'ev.kwhPer100', 'EV: Enter the energy use in kWh per 100 miles.');
+  checkVehicle(input.ev, 'ev', 'EV', need);
+  input.cars.forEach((c, i) => checkCar(c, i, input.cars.length, need));
+  need(sum(input.cars.map((c) => n(c.share))) > 0, 'cars.share', 'Give at least one old car a share of the miles.');
+  checkCharging(input, need);
   return errors;
 }

@@ -231,3 +231,64 @@ test('validate accepts a zero tax rate and a small real one', () => {
   low.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.04, downPayment: 40000 };
   assert.deepEqual(validate(low), []);
 });
+
+test('validate rejects negative numbers in every field, not just a few', () => {
+  const cases = [
+    (i) => { i.cars.push({ ...i.cars[0], share: -50 }); },
+    (i) => { i.charging.homeShare = 150; i.charging.fastShare = -50; },
+    (i) => { i.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.09, fees: -300, downPayment: 40000 }; },
+    (i) => { i.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.09, resale: -1, downPayment: 40000 }; },
+    (i) => { i.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.09, incentives: -7500, downPayment: 40000 }; },
+    (i) => { i.ev.maintenance.oil = -50; },
+    (i) => { i.cars[0].maintenance.repairsMultiplier = -2; },
+    (i) => { i.cars[0].sale = { on: true, value: -9000, payoff: 0 }; },
+    (i) => { i.options = { homeCharger: { on: true, cost: -1500 } }; },
+    (i) => { i.charging.fastRate = -0.4; },
+  ];
+  for (const [n, mutate] of cases.entries()) {
+    const input = base();
+    mutate(input);
+    assert.ok(validate(input).length > 0, `case ${n} was accepted`);
+  }
+});
+
+test('validate needs a rate for any charging that is paid', () => {
+  const input = base();
+  input.charging = { homeRate: 0, fastRate: 0.45, homeShare: 100, fastShare: 0 };
+  assert.ok(validate(input).some((e) => e.field === 'charging.homeRate'));
+  input.charging = { homeRate: 0.3, fastRate: 0, homeShare: 0, fastShare: 100 };
+  assert.ok(validate(input).some((e) => e.field === 'charging.fastRate'));
+});
+
+test('validate needs a price when buying and a payment when leasing', () => {
+  const buy = base();
+  buy.ev.acquisition = { mode: 'buy', price: 0, taxRate: 0.09, downPayment: 0 };
+  assert.ok(validate(buy).some((e) => e.field === 'ev.price'));
+  const lease = base();
+  lease.ev.acquisition = { mode: 'lease', payment: 0, termMonths: 36 };
+  assert.ok(validate(lease).some((e) => e.field === 'ev.payment'));
+});
+
+test('validate flags an APR typed as a fraction or as 59 for 5.9', () => {
+  const slip = base();
+  slip.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.09, apr: 0.0006, loanMonths: 60, downPayment: 0 };
+  assert.ok(validate(slip).some((e) => e.field === 'ev.apr'));
+  const big = base();
+  big.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.09, apr: 0.59, loanMonths: 60, downPayment: 0 };
+  assert.ok(validate(big).some((e) => e.field === 'ev.apr'));
+  const fine = base();
+  fine.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.09, apr: 0.059, loanMonths: 60, downPayment: 0 };
+  assert.deepEqual(validate(fine), []);
+  const cash = base();
+  cash.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.09, apr: 0, downPayment: 40000 };
+  assert.deepEqual(validate(cash), []);
+});
+
+test('validate messages say which vehicle they are about', () => {
+  const input = base();
+  input.cars[1].mpg = 0;
+  input.ev.insurance = -1;
+  const messages = validate(input).map((e) => e.message);
+  assert.ok(messages.some((m) => m.startsWith('Old car 2:')));
+  assert.ok(messages.some((m) => m.startsWith('EV:')));
+});
