@@ -23,22 +23,24 @@ const radio = (p, value, label, checked) => `
 const buyPanel = (p) => `
   <div class="panel" data-mode="buy" data-for="${p}">
     ${input(`${p}_price`, 'Price', { unit: '$' })}
-    ${input(`${p}_tax`, 'Sales tax', { unit: '%', hint: 'Your local rate, like 9.25. Your city or state tax site has it.' })}
-    ${input(`${p}_fees`, 'Fees', { unit: '$', hint: 'Title, registration and dealer doc fees.' })}
-    ${input(`${p}_down`, 'Down payment', { unit: '$', hint: 'If you are paying cash, enter the full price plus tax and fees.' })}
-    ${input(`${p}_apr`, 'Loan APR', { unit: '%', hint: 'Optional.' })}
-    ${input(`${p}_loanMonths`, 'Loan length', { unit: 'months', hint: 'Optional.' })}
-    ${input(`${p}_resale`, 'Resale value at the end', { unit: '$', hint: 'Your estimate. Leave it empty to count none.' })}
-    ${input(`${p}_incentives`, 'Incentives', { unit: '$', hint: 'Federal, state or utility credits, if any.' })}
+    ${input(`${p}_tax`, 'Sales tax', { unit: '%' })}
+    ${input(`${p}_fees`, 'Fees', { unit: '$' })}
+    ${input(`${p}_down`, 'Down payment', { unit: '$' })}
+    ${input(`${p}_apr`, 'Loan APR', { unit: '%' })}
+    ${input(`${p}_loanMonths`, 'Loan length', { unit: 'months' })}
+    ${input(`${p}_resale`, 'Resale value', { unit: '$' })}
+    ${input(`${p}_incentives`, 'Incentives', { unit: '$' })}
+    <p class="note">Sales tax is your local rate, like 9.25. Your city or state tax site has it. Fees are the title, registration and dealer doc fees. If you are paying cash, enter the full price plus tax and fees as the down payment. The loan fields are optional. Resale value is your own estimate, and an empty field counts none. Incentives are federal, state or utility credits.</p>
   </div>`;
 
 const leasePanel = (p) => `
   <div class="panel" data-mode="lease" data-for="${p}" hidden>
-    ${input(`${p}_leasePay`, 'Monthly payment', { unit: '$', hint: 'Tax is usually already in this number.' })}
+    ${input(`${p}_leasePay`, 'Monthly payment', { unit: '$' })}
     ${input(`${p}_dueAtSigning`, 'Due at signing', { unit: '$' })}
     ${input(`${p}_leaseTerm`, 'Term', { unit: 'months' })}
     ${input(`${p}_turnInFee`, 'Turn-in fee', { unit: '$' })}
     ${input(`${p}_leaseIncentives`, 'Incentives', { unit: '$' })}
+    <p class="note">Tax is usually already in the monthly payment.</p>
   </div>`;
 
 const paymentsPanel = (p) => `
@@ -66,9 +68,10 @@ const maintenance = (p) => `
     </div>
     <p class="note" data-total="${p}"></p>
     <div class="panel">
-      ${input(`${p}_tireCost`, 'Tire set cost', { unit: '$', hint: TIRE_HINT[p === 'ev' ? 'ev' : 'car'] })}
-      ${input(`${p}_tireMiles`, 'Miles per set', { unit: 'miles', hint: 'A set only counts once your total miles reach this.' })}
+      ${input(`${p}_tireCost`, 'Tire set cost', { unit: '$' })}
+      ${input(`${p}_tireMiles`, 'Miles per set', { unit: 'miles' })}
     </div>
+    <p class="note">${TIRE_HINT[p === 'ev' ? 'ev' : 'car']} A set only counts once your total miles reach the miles per set.</p>
   </fieldset>`;
 
 export function evFieldset() {
@@ -78,8 +81,9 @@ export function evFieldset() {
     <legend>EV</legend>
     ${picker(p)}
     <div class="panel">
-      ${input(`${p}_eff`, 'Energy use', { unit: 'kWh per 100 mi', hint: 'Filled in from the EPA. It is wall energy, what the utility bills.' })}
+      ${input(`${p}_eff`, 'Energy use', { unit: 'kWh per 100 mi' })}
     </div>
+    <p class="note">Filled in from the EPA. It is wall energy, what the utility bills.</p>
     <div class="radios" role="group" aria-label="Buy or lease">${radio(p, 'buy', 'Buy', true)}${radio(p, 'lease', 'Lease', false)}</div>
     ${buyPanel(p)}${leasePanel(p)}
     ${yearlyCosts(p)}
@@ -94,8 +98,9 @@ export function carFieldset() {
     <legend>Gas car</legend>
     ${picker(p)}
     <div class="panel">
-      ${input(`${p}_eff`, 'Fuel economy', { unit: 'mpg', hint: 'Filled in from the EPA. Edit it if you track your own.' })}
+      ${input(`${p}_eff`, 'Fuel economy', { unit: 'mpg' })}
     </div>
+    <p class="note">Filled in from the EPA. Edit it if you track your own.</p>
     <div class="radios" role="group" aria-label="Payment type">${radio(p, 'owned', 'Owned', true)}${radio(p, 'payments', 'Payments', false)}${radio(p, 'lease', 'Lease', false)}</div>
     ${paymentsPanel(p)}${leasePanel(p)}
     ${yearlyCosts(p)}
@@ -103,7 +108,8 @@ export function carFieldset() {
     <label class="check"><input type="checkbox" name="${p}_sellOn" data-reveals='[data-sale="${p}"]'> Selling this car</label>
     <div class="panel" data-sale="${p}" hidden>
       ${input(`${p}_sellValue`, 'Sale price', { unit: '$' })}
-      ${input(`${p}_sellPayoff`, 'Loan payoff', { unit: '$', hint: 'What you still owe on it, if anything.' })}
+      ${input(`${p}_sellPayoff`, 'Loan payoff', { unit: '$' })}
+      <p class="note">Loan payoff is what you still owe on the car, if anything.</p>
     </div>
   </fieldset>`;
 }

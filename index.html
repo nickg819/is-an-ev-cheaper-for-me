@@ -36,10 +36,10 @@
             <div class="field">
               <label for="gasPrice"><span class="label">Gas price <em>$ per gallon</em></span></label>
               <input id="gasPrice" name="gasPrice" type="number" inputmode="decimal" min="0" step="any" aria-describedby="gasPrice-help">
-              <small id="gasPrice-help" class="help">Look up your state's average on <a href="https://gasprices.aaa.com/state-gas-price-averages/" target="_blank" rel="noopener noreferrer">AAA gas prices<span class="sr"> (opens in a new tab)</span></a>.</small>
             </div>
             <label class="field"><span class="label">Miles per year</span><input name="annualMiles" type="number" inputmode="decimal" min="0" step="any"></label>
             <label class="field"><span class="label">Years of ownership</span><input name="years" type="number" inputmode="decimal" min="0" step="any" value="3"></label>
+            <p id="gasPrice-help" class="note help">Gas price: look up your state's average on <a href="https://gasprices.aaa.com/state-gas-price-averages/" target="_blank" rel="noopener noreferrer">AAA gas prices<span class="sr"> (opens in a new tab)</span></a>.</p>
           </fieldset>
         </section>
 
@@ -55,15 +55,15 @@
             <div class="field">
               <label for="homeRate"><span class="label">Home electricity rate <em>$ per kWh</em></span></label>
               <input id="homeRate" name="homeRate" type="number" inputmode="decimal" min="0" step="any" aria-describedby="homeRate-help">
-              <small id="homeRate-help" class="help">Your utility bill has your exact rate. For a state average, see <a href="https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a" target="_blank" rel="noopener noreferrer">EIA residential prices<span class="sr"> (opens in a new tab)</span></a>. They are listed in cents, so 16 cents is 0.16.</small>
             </div>
             <div class="field">
               <label for="fastRate"><span class="label">Fast charging rate <em>$ per kWh</em></span></label>
               <input id="fastRate" name="fastRate" type="number" inputmode="decimal" min="0" step="any" aria-describedby="fastRate-help">
-              <small id="fastRate-help" class="help">See average public charging prices by state on <a href="https://gasprices.aaa.com/ev-charging-prices/" target="_blank" rel="noopener noreferrer">AAA EV charging prices<span class="sr"> (opens in a new tab)</span></a>. The app of the network you use shows its own rate.</small>
             </div>
             <label class="field"><span class="label">Charged at home <em>% of charging</em></span><input name="homeShare" type="number" inputmode="decimal" min="0" step="any"></label>
             <label class="field"><span class="label">Charged fast <em>% of charging</em></span><input name="fastShare" type="number" inputmode="decimal" min="0" step="any"></label>
+            <p id="homeRate-help" class="note help">Home electricity: your utility bill has your exact rate. For a state average, see <a href="https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a" target="_blank" rel="noopener noreferrer">EIA residential prices<span class="sr"> (opens in a new tab)</span></a>. They are listed in cents, so 16 cents is 0.16.</p>
+            <p id="fastRate-help" class="note help">Fast charging: see average public charging prices by state on <a href="https://gasprices.aaa.com/ev-charging-prices/" target="_blank" rel="noopener noreferrer">AAA EV charging prices<span class="sr"> (opens in a new tab)</span></a>. The app of the network you use shows its own rate.</p>
           </fieldset>
         </section>
 

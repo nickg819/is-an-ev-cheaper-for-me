@@ -145,7 +145,10 @@ input::placeholder { color: var(--ink-2); font-weight: 500; opacity: .8; }
 select:disabled { opacity: .7; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .picker { display: grid; gap: var(--s3); grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.picker .note { grid-column: 1 / -1; }
+.picker .note, .card > .note, .panel > .note { grid-column: 1 / -1; }
+.group .panel { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+em { white-space: nowrap; }
+.panel + .note { margin-top: calc(-1 * var(--s1)); }
 .panel { display: grid; gap: var(--s3); grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 .radios { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); }
 .radio, .check { display: flex; gap: var(--s3); align-items: center; min-height: 44px; font-weight: 700; }
