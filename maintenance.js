@@ -29,3 +29,11 @@ export function estimateMaintenance(table, { powertrain, vehicleClass: cls, age,
   }
   return { costs, sources };
 }
+
+export function estimateTotal(totals, { powertrain, age, annualMiles }) {
+  const t = totals && totals[powertrain];
+  if (!t || !t.source || !t.asOf || !(annualMiles > 0)) return null;
+  const odometer = Math.max(0, age) * annualMiles + annualMiles / 2;
+  const bin = t.bins.find((b) => odometer < b.upToMiles) || t.bins[t.bins.length - 1];
+  return { perYear: Math.round(bin.perMile * annualMiles), source: t.source, asOf: t.asOf, note: t.note || '' };
+}
