@@ -12,6 +12,8 @@ const tone = (x) => (x < 0 ? 'neg' : 'pos');
 const isFlat = (r) => Math.abs(r.savings) < SAME_COST;
 const cents = (x) => `${(x * 100).toFixed(1)} cents`;
 const yearsText = (y) => `${y} ${y === 1 ? 'year' : 'years'}`;
+const gasLabel = (count) => (count > 1 ? 'Gas cars' : 'Gas car');
+const trim = (x, digits) => String(Number(x.toFixed(digits)));
 
 const LABELS = {
   efficiency: ['Using less energy', true],
@@ -33,8 +35,6 @@ function headline(r, years) {
     : `The EV costs you <span class="amount">${amount}</span> more over ${yearsText(years)}.`;
 }
 
-const gasLabel = (count) => (count > 1 ? 'Gas cars' : 'Gas car');
-
 function subline(r) {
   if (isFlat(r)) return '';
   const per = `<b>${money.format(Math.abs(r.perMonth))} a month</b>, ${money.format(Math.abs(r.perYear))} a year, ${cents(Math.abs(r.perMile))} a mile.`;
@@ -54,39 +54,36 @@ function tiles(r, count) {
     <div class="ev"><small>EV</small><strong>${money.format(r.ev.total)}</strong></div></div>`;
 }
 
-function step(leftNum, leftLabel, op, rightNum, rightLabel) {
-  return `<div class="step"><div class="n">${leftNum}<span class="l">${leftLabel}</span></div>
-    <span class="op">${op}</span><div class="n">${rightNum}<span class="l">${rightLabel}</span></div></div>`;
-}
+const numberInput = (bind, label) =>
+  `<input data-bind="${bind}" type="number" inputmode="decimal" min="0" step="any" aria-label="${label}">`;
 
-function gasColumn(r, input) {
-  const perYear = r.gallons / input.years;
-  const mpg = perYear > 0 ? input.annualMiles / perYear : 0;
-  return `<section class="col gas"><header class="display">${gasLabel(input.cars.length)}</header>
-    ${step(whole.format(input.annualMiles), 'miles a year', '&divide;', mpg.toFixed(1), 'miles per gallon')}
-    ${step(whole.format(perYear), 'gallons a year', '&times;', price.format(input.gasPrice), 'per gallon')}
-    <div class="out"><div class="n">${money.format(r.ice.energy / input.years)}</div>
-    <span class="l">gas a year, ${cents(r.iceEnergyPerMile)} a mile</span></div></section>`;
-}
+const staticValue = (key, label) => `<div class="n"><span data-v="${key}"></span><span class="l">${label}</span></div>`;
+const editableValue = (bind, aria, label) => `<div class="n">${numberInput(bind, aria)}<span class="l">${label}</span></div>`;
+const step = (left, op, right) => `<div class="step">${left}<span class="op">${op}</span>${right}</div>`;
 
-function evColumn(r, input) {
-  const kwhYear = annualKwh(input.ev.kwhPer100, input.annualMiles);
-  const perKwh = kwhYear > 0 ? r.ev.energy / input.years / kwhYear : 0;
-  return `<section class="col ev"><header class="display">EV</header>
-    ${step(whole.format(input.annualMiles), 'miles a year', '&divide;', (100 / input.ev.kwhPer100).toFixed(1), 'miles per kWh')}
-    ${step(whole.format(kwhYear), 'kWh a year', '&times;', price.format(perKwh), 'per kWh, blended')}
-    <div class="out"><div class="n">${money.format(r.ev.energy / input.years)}</div>
-    <span class="l">charging a year, ${cents(r.evEnergyPerMile)} a mile</span></div></section>`;
+// The working markup is built once so the boxes inside it keep focus while you type.
+function skeleton() {
+  return `<div class="cols">
+    <section class="col gas"><header class="display" data-v="gasTitle"></header>
+      ${step(staticValue('miles', 'miles a year'), '&divide;', editableValue('mpg', 'Miles per gallon', 'miles per gallon'))}
+      ${step(staticValue('gallons', 'gallons a year'), '&times;', editableValue('gasPrice', 'Gas price per gallon', 'dollars per gallon'))}
+      <div class="out"><div class="n" data-v="gasYear"></div><span class="l" data-v="gasPerMile"></span></div></section>
+    <section class="col ev"><header class="display">EV</header>
+      ${step(staticValue('miles', 'miles a year'), '&divide;', editableValue('mikwh', 'Miles per kWh', 'miles per kWh'))}
+      ${step(staticValue('kwh', 'kWh a year'), '&times;', staticValue('perKwh', 'per kWh, blended'))}
+      <div class="out"><div class="n" data-v="evYear"></div><span class="l" data-v="evPerMile"></span></div></section>
+  </div>
+  <section class="bars-wrap"><h3 class="display" data-v="barsTitle"></h3><div data-slot="bars"></div></section>
+  <div data-slot="table"></div>`;
 }
 
 function bars(r, input) {
   const top = Math.max(r.ice.total, r.ev.total, 1);
   const h = (v) => Math.round((Math.max(v, 0) / top) * 100);
-  return `<section class="bars-wrap"><h3 class="display">${yearsText(input.years)}, everything counted</h3>
-    <div class="bars">
+  return `<div class="bars">
       <div class="bar gas"><strong>${money.format(r.ice.total)}</strong><i style="--p:${h(r.ice.total)}"></i><span>${gasLabel(input.cars.length)}</span></div>
       <div class="bar ev"><strong>${money.format(r.ev.total)}</strong><i style="--p:${h(r.ev.total)}"></i><span>EV</span></div>
-    </div><div class="axis"></div></section>`;
+    </div><div class="axis"></div>`;
 }
 
 function breakdownTable(r, years) {
@@ -98,17 +95,47 @@ function breakdownTable(r, years) {
     })
     .join('');
   const total = `<tr class="total"><th scope="row">Total</th><td class="${tone(r.savings)}">${signed(r.savings)}</td></tr>`;
+  const lease = r.leaseTerms.ev > 1
+    ? `<p class="note">Your ownership period is longer than one lease, so this counts ${r.leaseTerms.ev} back-to-back leases.</p>` : '';
   return `<table><caption>Where the ${years}-year difference comes from. Positive means the EV saves you money.</caption>
-    <tbody>${rows}${total}</tbody></table>`;
+    <tbody>${rows}${total}</tbody></table>${lease}`;
+}
+
+function fillWorking(el, r, input) {
+  const text = (key, value) => el.querySelectorAll(`[data-v="${key}"]`).forEach((e) => { e.textContent = value; });
+  const slot = (key, html) => { el.querySelector(`[data-slot="${key}"]`).innerHTML = html; };
+  const box = (bind, value, readOnly = false) => {
+    const i = el.querySelector(`[data-bind="${bind}"]`);
+    i.readOnly = readOnly;
+    if (document.activeElement !== i) i.value = value;
+  };
+  const perYear = r.gallons / input.years;
+  const mpg = perYear > 0 ? input.annualMiles / perYear : 0;
+  const kwhYear = annualKwh(input.ev.kwhPer100, input.annualMiles);
+  text('gasTitle', gasLabel(input.cars.length));
+  text('miles', whole.format(input.annualMiles));
+  text('gallons', whole.format(perYear));
+  text('kwh', whole.format(kwhYear));
+  text('perKwh', price.format(kwhYear > 0 ? r.ev.energy / input.years / kwhYear : 0));
+  text('gasYear', money.format(r.ice.energy / input.years));
+  text('evYear', money.format(r.ev.energy / input.years));
+  text('gasPerMile', `gas a year, ${cents(r.iceEnergyPerMile)} a mile`);
+  text('evPerMile', `charging a year, ${cents(r.evEnergyPerMile)} a mile`);
+  text('barsTitle', `${yearsText(input.years)}, everything counted`);
+  box('mpg', trim(mpg, 2), input.cars.length > 1);
+  box('gasPrice', input.gasPrice);
+  box('mikwh', trim(100 / input.ev.kwhPer100, 2));
+  slot('bars', bars(r, input));
+  slot('table', breakdownTable(r, input.years));
 }
 
 export function renderResult(resultEl, workingEl, r, input) {
-  const lease = r.leaseTerms.ev > 1
-    ? `<p class="note">Your ownership period is longer than one lease, so this counts ${r.leaseTerms.ev} back-to-back leases.</p>` : '';
   resultEl.innerHTML = `<h2 class="headline display">${headline(r, input.years)}</h2>
     <p class="sub">${subline(r)}</p>${tiles(r, input.cars.length)}`;
-  workingEl.innerHTML = `<div class="cols">${gasColumn(r, input)}${evColumn(r, input)}</div>
-    ${bars(r, input)}${breakdownTable(r, input.years)}${lease}`;
+  if (!workingEl.firstElementChild) workingEl.innerHTML = skeleton();
+  workingEl.hidden = false;
+  workingEl.classList.remove('stale');
+  fillWorking(workingEl, r, input);
 }
 
 export function renderErrors(resultEl, workingEl, errors) {
@@ -117,5 +144,7 @@ export function renderErrors(resultEl, workingEl, errors) {
   resultEl.innerHTML = `<h2 class="headline display">Not enough to go on yet.</h2>
     <p class="sub">Fill in the required fields and the answer shows up here.</p>
     <ul class="todo">${shown}${more}</ul>`;
-  workingEl.innerHTML = '';
+  // Keep the working visible while you are typing in it, so clearing a box to retype does not lose focus.
+  if (workingEl.contains(document.activeElement)) workingEl.classList.add('stale');
+  else workingEl.hidden = true;
 }

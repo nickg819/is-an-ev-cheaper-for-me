@@ -214,7 +214,7 @@ Square. Every container (result, columns, bars panel, table, cards, groups, tabs
 Sky Cream block with the display headline; the saving or extra cost sits in a flat teal block (the amount block, white text, no radius) inline in the sentence. Below it a plain sub-line with bold figures. On phone it inverts to the night card with two white-on-fill totals bordered by a 1px On Night line.
 
 ### Math columns
-Two bordered cards, one per side. A solid fill header in caps display type, two rows of "value, operator, value" with small captions, and a solid fill output row with the yearly cost. Values are read-only text.
+Two bordered cards, one per side. A solid fill header in caps display type, two rows of "value, operator, value" with small captions, and a solid fill output row with the yearly cost. Miles per gallon, gas price and miles per kWh are editable boxes that drive the matching form fields; every other value is text. With two old cars the blended mpg is read-only.
 
 ### Bars panel
 Title, then two bars drawn as solid fills with the dollar total above and the label below, sitting on a 1px Line Strong axis.
@@ -255,7 +255,6 @@ Native radios and checkboxes, 24px, teal accent, in 44px rows with bold labels.
 ## Known open items
 
 - The display face loads from the Google Fonts CDN, not self-hosted, and the file has no local fallback of the same condensed width.
-- The math columns show read-only values; the approved comp showed editable inputs there.
 - The comp-diff gate has not been run against the shipped build.
 - White on Brick Peach measures 4.6:1 and white on Dark Teal about 5.1:1, both above the 4.5:1 minimum, but the margin on peach is thin.
 - The detector reports six font sizes (11, 14, 17, 19, 20 and 28px) that appear in the Hierarchy prose but not in the typography frontmatter.

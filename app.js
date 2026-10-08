@@ -161,6 +161,24 @@ function wireInputs() {
   });
 }
 
+// Each box in the math columns drives one form field. Miles per kWh is stored as kWh per 100 miles.
+const WORKING_BINDINGS = {
+  gasPrice: ['gasPrice', (x) => x],
+  mpg: ['car0_eff', (x) => x],
+  mikwh: ['ev_eff', (x) => (n(x) > 0 ? 100 / n(x) : '')],
+};
+
+function wireWorking() {
+  workingEl.addEventListener('input', (e) => {
+    const binding = WORKING_BINDINGS[e.target.dataset.bind];
+    if (!binding) return;
+    const [name, convert] = binding;
+    const target = form.elements[name];
+    target.value = convert(e.target.value);
+    target.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+}
+
 function wirePeek() {
   if (!('IntersectionObserver' in window)) return;
   new IntersectionObserver(([entry]) => { peekEl.hidden = entry.isIntersecting; }).observe(resultEl);
@@ -217,6 +235,7 @@ async function init() {
   PICKERS.forEach(wirePicker);
   wireToggles();
   wireInputs();
+  wireWorking();
   wireTabs();
   wirePeek();
   showTotalHint('ev');
