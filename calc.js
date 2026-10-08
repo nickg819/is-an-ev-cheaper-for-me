@@ -180,12 +180,15 @@ export function compare(input) {
 }
 
 const MAX_TAX = 0.2;
+const MIN_REAL_TAX = 0.005;
+
+const plausibleTax = (rate) => rate === 0 || (rate >= MIN_REAL_TAX && rate <= MAX_TAX);
 
 function checkAcquisition(a, prefix, need) {
   if (a.mode === 'buy') {
     need(n(a.price) >= 0, `${prefix}.price`, 'Price cannot be negative.');
-    need(n(a.taxRate) >= 0 && n(a.taxRate) <= MAX_TAX, `${prefix}.taxRate`,
-      'Enter the sales tax as a percent, like 9.25.');
+    need(plausibleTax(n(a.taxRate)), `${prefix}.taxRate`,
+      'Enter the sales tax as a percent, like 9.25, not a fraction.');
     need(n(a.apr) === 0 || n(a.loanMonths) > 0, `${prefix}.loanMonths`, 'Enter the loan length in months.');
   }
   if (a.mode === 'lease') {

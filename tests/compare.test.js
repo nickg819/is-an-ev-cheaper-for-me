@@ -215,3 +215,19 @@ test('validate requires a lease term when leasing', () => {
   input.ev.acquisition = { mode: 'lease', payment: 500, termMonths: 0 };
   assert.ok(validate(input).some((e) => e.field === 'ev.termMonths'));
 });
+
+test('validate flags a tax rate typed as a fraction, like 0.0925 for 9.25%', () => {
+  const input = base();
+  input.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.000925, downPayment: 40000 };
+  const err = validate(input).find((e) => e.field === 'ev.taxRate');
+  assert.match(err.message, /percent/i);
+});
+
+test('validate accepts a zero tax rate and a small real one', () => {
+  const zero = base();
+  zero.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0, downPayment: 40000 };
+  assert.deepEqual(validate(zero), []);
+  const low = base();
+  low.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.04, downPayment: 40000 };
+  assert.deepEqual(validate(low), []);
+});
