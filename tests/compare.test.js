@@ -12,7 +12,6 @@ import {
 const near = (a, b, tol = 0.01) =>
   assert.ok(Math.abs(a - b) <= tol, `${a} is not within ${tol} of ${b}`);
 
-const zeroMaint = { oil: 0, tires: 0, brakes: 0, repairs: 0 };
 
 function base() {
   return {
@@ -26,11 +25,11 @@ function base() {
       acquisition: { mode: 'lease', payment: 600, termMonths: 12, dueAtSigning: 0, turnInFee: 0 },
       insurance: 1200,
       registration: 100,
-      maintenance: { ...zeroMaint },
+      maintenance: 0,
     },
     cars: [
-      { share: 6907, mpg: 20, acquisition: { mode: 'owned' }, insurance: 1500, registration: 150, maintenance: { ...zeroMaint } },
-      { share: 2812, mpg: 26, acquisition: { mode: 'owned' }, insurance: 900, registration: 100, maintenance: { ...zeroMaint } },
+      { share: 6907, mpg: 20, acquisition: { mode: 'owned' }, insurance: 1500, registration: 150, maintenance: 0 },
+      { share: 2812, mpg: 26, acquisition: { mode: 'owned' }, insurance: 900, registration: 100, maintenance: 0 },
     ],
   };
 }
@@ -239,8 +238,8 @@ test('validate rejects negative numbers in every field, not just a few', () => {
     (i) => { i.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.09, fees: -300, downPayment: 40000 }; },
     (i) => { i.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.09, resale: -1, downPayment: 40000 }; },
     (i) => { i.ev.acquisition = { mode: 'buy', price: 40000, taxRate: 0.09, incentives: -7500, downPayment: 40000 }; },
-    (i) => { i.ev.maintenance.oil = -50; },
-    (i) => { i.cars[0].maintenance.repairsMultiplier = -2; },
+    (i) => { i.ev.maintenance = -50; },
+    (i) => { i.cars[0].maintenance = -2; },
     (i) => { i.cars[0].sale = { on: true, value: -9000, payoff: 0 }; },
     (i) => { i.options = { homeCharger: { on: true, cost: -1500 } }; },
     (i) => { i.charging.fastRate = -0.4; },
@@ -291,4 +290,56 @@ test('validate messages say which vehicle they are about', () => {
   const messages = validate(input).map((e) => e.message);
   assert.ok(messages.some((m) => m.startsWith('Old car 2:')));
   assert.ok(messages.some((m) => m.startsWith('EV:')));
+});
+
+test('tires are bought only when the miles reach a set\'s life', () => {
+  const short = base();
+  short.annualMiles = 10000;
+  short.years = 2;
+  short.ev.tires = { setCost: 1400, milesPerSet: 35000 };
+  assert.equal(compare(short).ev.tires, 0);
+  const long = base();
+  long.annualMiles = 12000;
+  long.years = 3;
+  long.ev.tires = { setCost: 1400, milesPerSet: 35000 };
+  assert.equal(compare(long).ev.tires, 1400);
+});
+
+test('tires: exactly one set of miles buys one set, two sets of miles buy two', () => {
+  const input = base();
+  input.annualMiles = 35000;
+  input.years = 1;
+  input.ev.tires = { setCost: 1000, milesPerSet: 35000 };
+  assert.equal(compare(input).ev.tires, 1000);
+  input.years = 2;
+  assert.equal(compare(input).ev.tires, 2000);
+});
+
+test('tires show as their own breakdown line and the lines still sum to the headline', () => {
+  const input = base();
+  input.annualMiles = 15000;
+  input.years = 4;
+  input.ev.tires = { setCost: 1500, milesPerSet: 30000 };
+  input.cars[0].tires = { setCost: 800, milesPerSet: 50000 };
+  input.cars[1].tires = { setCost: 600, milesPerSet: 50000 };
+  const r = compare(input);
+  assert.ok(r.breakdown.tires < 0);
+  const total = Object.values(r.breakdown).reduce((a, b) => a + b, 0);
+  near(total, r.savings, 0.001);
+});
+
+test('blank tire fields cost nothing, same as no tires at all', () => {
+  const blank = base();
+  blank.ev.tires = { setCost: '', milesPerSet: '' };
+  assert.deepEqual(compare(blank), compare(base()));
+});
+
+test('validate needs the miles per set when a set cost is given, and rejects negatives', () => {
+  const input = base();
+  input.ev.tires = { setCost: 1400, milesPerSet: 0 };
+  assert.ok(validate(input).some((e) => e.field === 'ev.tireMiles'));
+  input.ev.tires = { setCost: -1, milesPerSet: 35000 };
+  assert.ok(validate(input).some((e) => e.field === 'ev.tireCost'));
+  input.ev.tires = { setCost: 1400, milesPerSet: 35000 };
+  assert.deepEqual(validate(input), []);
 });

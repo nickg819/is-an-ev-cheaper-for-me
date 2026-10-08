@@ -47,15 +47,20 @@ const paymentsPanel = (p) => `
     ${input(`${p}_monthsRemaining`, 'Months left', { unit: 'months' })}
   </div>`;
 
+const TIRE_HINT = {
+  ev: 'EVs often wear tires faster and pay more for them. Ask a tire shop what your model needs.',
+  car: 'Leave both blank to count no tires.',
+};
+
 const maintenance = (p) => `
   <fieldset class="group">
-    <legend>Maintenance per year</legend>
+    <legend>Maintenance and tires</legend>
+    ${input(`${p}_maintenance`, 'Maintenance and repairs', { unit: '$ per year', ph: 'enter your own' })}
     <p class="note" data-total="${p}"></p>
-    ${input(`${p}_oil`, 'Oil and fluids', { unit: '$', ph: 'enter your own' })}
-    ${input(`${p}_tires`, 'Tires', { unit: '$', ph: 'enter your own' })}
-    ${input(`${p}_brakes`, 'Brakes', { unit: '$', ph: 'enter your own' })}
-    ${input(`${p}_repairs`, 'General repairs', { unit: '$', ph: 'enter your own' })}
-    ${input(`${p}_repairsMult`, 'Repairs multiplier', { ph: '1', hint: '1 is typical. Try 2 if this car has been expensive to keep.' })}
+    <div class="panel">
+      ${input(`${p}_tireCost`, 'Tire set cost', { unit: '$', hint: TIRE_HINT[p === 'ev' ? 'ev' : 'car'] })}
+      ${input(`${p}_tireMiles`, 'Miles per set', { unit: 'miles', hint: 'A set only counts once your total miles reach this.' })}
+    </div>
   </fieldset>`;
 
 export function evFieldset() {

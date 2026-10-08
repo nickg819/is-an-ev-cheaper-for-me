@@ -30,7 +30,7 @@ A long form with a live result. People fill in what they know and leave optional
 
 - All math runs in the browser. Nothing is stored or sent anywhere except the EPA vehicle lookup.
 - Sales tax is a typed rate. There is no zip lookup in version one.
-- Maintenance is four itemized lines per car that start empty. A cited Consumer Reports total (EV and gas only, 2019 and 2020 survey data) shows as a hint.
+- Maintenance and repairs is one budget per car in dollars per year. It is prefilled from a cited Consumer Reports estimate (EV and gas only, 2019 and 2020 survey data) averaged over the ownership period, and the person can overwrite it. Tires are separate: a set cost and the miles per set, counted only when total miles reach a set's life.
 - Result stays blank until the required fields are valid.
 - Optional parts (free charging, incentives, home charger, selling the old car) change the result only when switched on.
 - Savings are shown as a total over the ownership period, per year, per month, and per mile, with a breakdown by source.

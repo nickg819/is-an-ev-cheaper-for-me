@@ -98,8 +98,12 @@ export function evEnergy({ kwhPer100, annualMiles, years, charging, freeShare = 
   return { kwh, atFast, atMix, actual: atMix * (1 - free) };
 }
 
-const maintenanceYearly = (m = {}) =>
-  n(m.oil) + n(m.tires) + n(m.brakes) + n(m.repairs) * (m.repairsMultiplier == null ? 1 : n(m.repairsMultiplier));
+// A set is bought only once the car's miles reach a full set's life, so short or low-mileage ownership costs nothing.
+function tireCost(tires, miles) {
+  const setCost = n(tires && tires.setCost);
+  const life = n(tires && tires.milesPerSet);
+  return setCost > 0 && life > 0 ? Math.floor(miles / life) * setCost : 0;
+}
 
 const withTotal = (t) => ({ ...t, total: sum(Object.values(t)) });
 
@@ -107,14 +111,15 @@ function netSale(car) {
   return car.sale && car.sale.on ? n(car.sale.value) - n(car.sale.payoff) : 0;
 }
 
-function vehicleCosts(v, years) {
+function vehicleCosts(v, years, miles) {
   const acq = acquisitionCost(v.acquisition, years);
   return {
     acquisition: acq.total,
     leaseTerms: acq.leaseTerms,
     insurance: n(v.insurance) * years,
     registration: n(v.registration) * years,
-    maintenance: maintenanceYearly(v.maintenance) * years,
+    maintenance: n(v.maintenance) * years,
+    tires: tireCost(v.tires, miles),
   };
 }
 
@@ -126,13 +131,16 @@ function evTotals(input, energy, own) {
     insurance: own.insurance,
     registration: own.registration,
     maintenance: own.maintenance,
+    tires: own.tires,
     homeCharger: options.homeCharger && options.homeCharger.on ? n(options.homeCharger.cost) : 0,
     equity: -sum(input.cars.map(netSale)),
   });
 }
 
 function iceTotals(input, gas) {
-  const costs = input.cars.map((c) => vehicleCosts(c, input.years));
+  const shares = normalizeShares(input.cars.map((c) => c.share));
+  const miles = input.annualMiles * input.years;
+  const costs = input.cars.map((c, i) => vehicleCosts(c, input.years, shares[i] * miles));
   const add = (key) => sum(costs.map((c) => c[key]));
   return withTotal({
     acquisition: add('acquisition'),
@@ -140,6 +148,7 @@ function iceTotals(input, gas) {
     insurance: add('insurance'),
     registration: add('registration'),
     maintenance: add('maintenance'),
+    tires: add('tires'),
     homeCharger: 0,
     equity: 0,
   });
@@ -152,6 +161,7 @@ function breakdownOf(ev, ice, energy) {
     freeCharging: energy.atMix - energy.actual,
     acquisition: ice.acquisition - ev.acquisition,
     maintenance: ice.maintenance - ev.maintenance,
+    tires: ice.tires - ev.tires,
     insurance: ice.insurance - ev.insurance,
     registration: ice.registration - ev.registration,
     homeCharger: ice.homeCharger - ev.homeCharger,
@@ -171,7 +181,7 @@ export function compare(input) {
     charging: input.charging, freeShare: freeShareOf(input),
   });
   const gas = gasUsage({ cars: input.cars, annualMiles, years });
-  const evOwn = vehicleCosts(input.ev, years);
+  const evOwn = vehicleCosts(input.ev, years, annualMiles * years);
   const ev = evTotals(input, energy, evOwn);
   const ice = iceTotals(input, gas);
   const savings = ice.total - ev.total;
@@ -198,7 +208,6 @@ const plausibleRate = (rate, max) => rate === 0 || (rate >= MIN_REAL_RATE && rat
 
 const BUY_FIELDS = [['fees', 'Fees'], ['downPayment', 'Down payment'], ['resale', 'Resale value'], ['incentives', 'Incentives'], ['loanMonths', 'Loan length']];
 const LEASE_FIELDS = [['dueAtSigning', 'Due at signing'], ['turnInFee', 'Turn-in fee'], ['incentives', 'Incentives']];
-const MAINTENANCE_FIELDS = [['oil', 'Oil and fluids'], ['tires', 'Tires'], ['brakes', 'Brakes'], ['repairs', 'Repairs']];
 
 function nonNegative(obj, list, prefix, who, need) {
   for (const [key, name] of list) {
@@ -228,11 +237,15 @@ function checkAcquisition(a, prefix, who, need) {
   }
 }
 
+function checkTires(tires = {}, prefix, who, need) {
+  need(n(tires.setCost) >= 0, `${prefix}.tireCost`, `${who}: The tire set cost cannot be negative.`);
+  need(n(tires.milesPerSet) >= 0, `${prefix}.tireMiles`, `${who}: The miles per set cannot be negative.`);
+  need(n(tires.setCost) <= 0 || n(tires.milesPerSet) > 0, `${prefix}.tireMiles`, `${who}: Enter how many miles a set of tires lasts.`);
+}
+
 function checkVehicle(v, prefix, who, need) {
-  nonNegative(v, [['insurance', 'Insurance'], ['registration', 'Registration']], prefix, who, need);
-  nonNegative(v.maintenance || {}, MAINTENANCE_FIELDS, `${prefix}.maintenance`, who, need);
-  const mult = v.maintenance && v.maintenance.repairsMultiplier;
-  need(mult == null || n(mult) >= 0, `${prefix}.repairsMultiplier`, `${who}: The repairs multiplier cannot be negative.`);
+  nonNegative(v, [['insurance', 'Insurance'], ['registration', 'Registration'], ['maintenance', 'Maintenance']], prefix, who, need);
+  checkTires(v.tires, prefix, who, need);
   checkAcquisition(v.acquisition, prefix, who, need);
 }
 

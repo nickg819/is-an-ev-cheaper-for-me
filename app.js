@@ -43,25 +43,40 @@ function recompute() {
   announce(headline);
 }
 
-function showTotalHint(p) {
-  const el = form.querySelector(`[data-total="${p}"]`);
+// Prefills the maintenance budget with the sourced estimate until the person types their own number.
+function updateMaintenance(p) {
+  const note = form.querySelector(`[data-total="${p}"]`);
+  const box = field(p, 'maintenance');
   const v = vehicles[p];
-  if (p !== 'ev' && !v) { el.textContent = ''; return; }
-  const hint = estimateTotal(TOTALS, {
+  const hint = p !== 'ev' && !v ? null : estimateTotal(TOTALS, {
     powertrain: p === 'ev' ? 'ev' : powertrainOf(v.atvType),
     age: v ? new Date().getFullYear() - v.year : 0,
     annualMiles: n(form.elements.annualMiles.value),
+    years: n(form.elements.years.value),
   });
-  el.textContent = hint
-    ? `Published estimate for a car like this: about ${money.format(hint.perYear)} a year for maintenance and repairs together. Enter your own split below. ${hint.note} Source: ${hint.source}.`
-    : '';
+  if (!hint) {
+    if (box.dataset.auto) { box.value = ''; delete box.dataset.auto; }
+    note.textContent = '';
+    return;
+  }
+  if (!box.dataset.touched) {
+    box.value = Math.round(hint.perYear / 10) * 10;
+    box.dataset.auto = '1';
+  }
+  note.textContent = `Prefilled with an estimate of about ${money.format(hint.perYear)} a year, averaged over your ownership period. Edit it if you know better. ${hint.note} The survey does not say whether tires count, so enter them below and lower this if you count them here. Source: ${hint.source}.`;
+}
+
+function markMaintenanceEdited(box) {
+  delete box.dataset.auto;
+  if (box.value === '') delete box.dataset.touched;
+  else box.dataset.touched = '1';
 }
 
 function clearVehicle(p, text = '') {
   delete vehicles[p];
   field(p, 'eff').value = '';
   message(p, text);
-  showTotalHint(p);
+  updateMaintenance(p);
   recompute();
 }
 
@@ -82,7 +97,7 @@ async function applyVehicle(p, id, token) {
     vehicles[p] = v;
     field(p, 'eff').value = efficiencyOf(p, v);
     message(p, powertrainOf(v.atvType) === 'hybrid' ? 'Hybrid or plug-in: check the mpg is right for how you drive it.' : '');
-    showTotalHint(p);
+    updateMaintenance(p);
     recompute();
   } catch {
     if (token === requests[p]) message(p, lookupDown);
@@ -140,7 +155,9 @@ function wireToggles() {
 
 function wireInputs() {
   form.addEventListener('input', (e) => {
-    if (e.target.name === 'annualMiles') PICKERS.forEach(showTotalHint);
+    const { name } = e.target;
+    if (name.endsWith('_maintenance')) markMaintenanceEdited(e.target);
+    if (name === 'annualMiles' || name === 'years') PICKERS.forEach(updateMaintenance);
     recompute();
   });
 }
@@ -222,7 +239,7 @@ async function init() {
   wireWorking();
   wireTabs();
   wirePeek();
-  showTotalHint('ev');
+  updateMaintenance('ev');
   recompute();
   await loadYears();
 }

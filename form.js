@@ -26,20 +26,13 @@ function readAcquisition(fd, p) {
   }
 }
 
-function readMaintenance(fd, p) {
-  const mult = fd.get(`${p}_repairsMult`);
-  return {
-    oil: num(fd, `${p}_oil`), tires: num(fd, `${p}_tires`), brakes: num(fd, `${p}_brakes`),
-    repairs: num(fd, `${p}_repairs`), repairsMultiplier: mult === '' || mult == null ? 1 : Number(mult),
-  };
-}
-
 function readVehicle(fd, p) {
   return {
     acquisition: readAcquisition(fd, p),
     insurance: num(fd, `${p}_insurance`),
     registration: num(fd, `${p}_registration`),
-    maintenance: readMaintenance(fd, p),
+    maintenance: num(fd, `${p}_maintenance`),
+    tires: { setCost: num(fd, `${p}_tireCost`), milesPerSet: num(fd, `${p}_tireMiles`) },
   };
 }
 
