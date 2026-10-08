@@ -83,7 +83,7 @@ export function evFieldset() {
     <div class="panel">
       ${input(`${p}_eff`, 'Energy use', { unit: 'kWh per 100 mi' })}
     </div>
-    <p class="note">Filled in from the EPA. It is wall energy, what the utility bills.</p>
+    <p class="note">Filled in from the EPA.</p>
     <div class="radios" role="group" aria-label="Buy or lease">${radio(p, 'buy', 'Buy', true)}${radio(p, 'lease', 'Lease', false)}</div>
     ${buyPanel(p)}${leasePanel(p)}
     ${yearlyCosts(p)}
