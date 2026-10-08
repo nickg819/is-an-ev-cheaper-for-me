@@ -288,7 +288,7 @@ test('validate messages say which vehicle they are about', () => {
   input.cars[1].mpg = 0;
   input.ev.insurance = -1;
   const messages = validate(input).map((e) => e.message);
-  assert.ok(messages.some((m) => m.startsWith('Old car 2:')));
+  assert.ok(messages.some((m) => m.startsWith('Gas car 2:')));
   assert.ok(messages.some((m) => m.startsWith('EV:')));
 });
 

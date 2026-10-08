@@ -114,17 +114,17 @@ async function cascade(p, level) {
     if (level === 'year') {
       const makes = y.value ? await getMakes(y.value) : [];
       if (token !== requests[p]) return;
-      fillSelect(mk, makes, 'Make');
+      fillSelect(mk, makes, 'Select');
     }
     if (level === 'year' || level === 'make') {
       const models = mk.value ? await getModels(y.value, mk.value) : [];
       if (token !== requests[p]) return;
-      fillSelect(md, models, 'Model');
+      fillSelect(md, models, 'Select');
     }
     if (level !== 'option') {
       const options = md.value ? await getOptions(y.value, mk.value, md.value) : [];
       if (token !== requests[p]) return;
-      fillSelect(op, options, 'Version');
+      fillSelect(op, options, 'Select');
       if (level === 'model' && options.length === 1) op.selectedIndex = 1;
     }
     if (op.value) await applyVehicle(p, op.value, token);
@@ -226,7 +226,7 @@ function wireTabs() {
 async function loadYears() {
   try {
     const years = await getYears();
-    PICKERS.forEach((p) => fillSelect(field(p, 'year'), years, 'Year'));
+    PICKERS.forEach((p) => fillSelect(field(p, 'year'), years, 'Select'));
   } catch {
     PICKERS.forEach((p) => message(p, lookupDown));
   }

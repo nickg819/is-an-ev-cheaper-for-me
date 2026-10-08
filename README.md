@@ -4,8 +4,8 @@ A calculator that compares owning an EV with keeping the gas car it would replac
 covers energy, buying or leasing, tax and fees, insurance, registration, maintenance
 and tires.
 
-It all runs in the browser. The only request that leaves the page is the EPA lookup for
-the year, make and model you pick.
+It all runs in the browser. Besides the font from Google Fonts, the only request that
+leaves the page is the EPA lookup for the year, make and model you pick.
 
 ## Running it
 

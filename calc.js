@@ -243,7 +243,7 @@ function checkVehicle(v, prefix, who, need) {
 
 function checkCar(c, i, count, need) {
   const prefix = `cars[${i}]`;
-  const who = count > 1 ? `Old car ${i + 1}` : 'Old car';
+  const who = count > 1 ? `Gas car ${i + 1}` : 'Gas car';
   need(n(c.mpg) > 0, `${prefix}.mpg`, `${who}: Enter the miles per gallon.`);
   need(n(c.share) >= 0, `${prefix}.share`, `${who}: The share of miles cannot be negative.`);
   if (c.sale && c.sale.on) nonNegative(c.sale, [['value', 'Sale price'], ['payoff', 'Loan payoff']], `${prefix}.sale`, who, need);
@@ -265,12 +265,12 @@ export function validate(input) {
   const errors = [];
   const need = (ok, field, message) => ok || errors.push({ field, message });
   need(n(input.gasPrice) > 0, 'gasPrice', 'Enter the gas price per gallon.');
-  need(n(input.annualMiles) > 0, 'annualMiles', 'Enter the miles you drive in a year.');
-  need(n(input.years) > 0, 'years', 'Enter how many years you will keep the car.');
+  need(n(input.annualMiles) > 0, 'annualMiles', 'Enter miles per year.');
+  need(n(input.years) > 0, 'years', 'Enter years of ownership.');
   need(n(input.ev.kwhPer100) > 0, 'ev.kwhPer100', 'EV: Enter the energy use in kWh per 100 miles.');
   checkVehicle(input.ev, 'ev', 'EV', need);
   input.cars.forEach((c, i) => checkCar(c, i, input.cars.length, need));
-  need(sum(input.cars.map((c) => n(c.share))) > 0, 'cars.share', 'Give at least one old car a share of the miles.');
+  need(sum(input.cars.map((c) => n(c.share))) > 0, 'cars.share', 'Give at least one gas car a share of the miles.');
   checkCharging(input, need);
   return errors;
 }

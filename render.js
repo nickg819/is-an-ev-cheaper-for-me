@@ -7,7 +7,8 @@ export const money = new Intl.NumberFormat('en-US', { style: 'currency', currenc
 const whole = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 const price = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
 
-const signed = (x) => `${x < 0 ? '-' : ''}${money.format(Math.abs(x))}`;
+const MINUS = String.fromCharCode(0x2212);
+const signed = (x) => `${x < 0 ? MINUS : ''}${money.format(Math.abs(x))}`;
 const tone = (x) => (x < 0 ? 'neg' : 'pos');
 const isFlat = (r) => Math.abs(r.savings) < SAME_COST;
 const cents = (x) => `${(x * 100).toFixed(1)} cents`;
@@ -16,16 +17,16 @@ const gasLabel = (count) => (count > 1 ? 'Gas cars' : 'Gas car');
 const trim = (x, digits) => String(Number(x.toFixed(digits)));
 
 const LABELS = {
-  efficiency: ['Using less energy', true],
-  cheaperCharging: ['Charging cheaper than fast charging', false],
+  efficiency: ['Energy', true],
+  cheaperCharging: ['Home vs fast charging', false],
   freeCharging: ['Free charging', false],
-  acquisition: ['Buying or leasing', true],
+  acquisition: ['Purchase or lease', true],
   maintenance: ['Maintenance and repairs', true],
   tires: ['Tires', false],
   insurance: ['Insurance', true],
   registration: ['Registration', true],
   homeCharger: ['Home charger', false],
-  equity: ['Selling the old car', false],
+  equity: ['Gas car sale', false],
 };
 
 function headline(r, years) {
@@ -33,12 +34,12 @@ function headline(r, years) {
   if (isFlat(r)) return `The two cost about the same over ${yearsText(years)}.`;
   return r.savings > 0
     ? `The EV saves you <span class="amount">${amount}</span> over ${yearsText(years)}.`
-    : `The EV costs you <span class="amount">${amount}</span> more over ${yearsText(years)}.`;
+    : `The EV costs you <span class="amount">${amount}</span>&nbsp;more over ${yearsText(years)}.`;
 }
 
 function subline(r) {
   if (isFlat(r)) return '';
-  const per = `<b>${money.format(Math.abs(r.perMonth))} a month</b>, ${money.format(Math.abs(r.perYear))} a year, ${cents(Math.abs(r.perMile))} a mile.`;
+  const per = `${money.format(Math.abs(r.perMonth))} a month, ${money.format(Math.abs(r.perYear))} a year, ${cents(Math.abs(r.perMile))} a mile.`;
   if (r.breakEvenGasPrice == null) return per;
   if (r.breakEvenGasPrice <= 0) {
     return r.savings > 0 ? `${per} The EV saves money even if gas were free.` : per;
@@ -51,8 +52,8 @@ function subline(r) {
 
 function tiles(r, count) {
   return `<div class="mini">
-    <div class="gas"><small>${gasLabel(count)}</small><strong>${money.format(r.ice.total)}</strong></div>
-    <div class="ev"><small>EV</small><strong>${money.format(r.ev.total)}</strong></div></div>`;
+    <div class="gas"><strong>${money.format(r.ice.total)}</strong><span class="l">${gasLabel(count)}</span></div>
+    <div class="ev"><strong>${money.format(r.ev.total)}</strong><span class="l">EV</span></div></div>`;
 }
 
 const numberInput = (bind, label) =>
@@ -83,9 +84,10 @@ function bars(r, input) {
   const top = Math.max(r.ice.total, r.ev.total, 1);
   const h = (v) => Math.round((Math.max(v, 0) / top) * 100);
   return `<div class="bars">
-      <div class="bar gas"><strong>${money.format(r.ice.total)}</strong><i style="--p:${h(r.ice.total)}"></i><span>${gasLabel(input.cars.length)}</span></div>
-      <div class="bar ev"><strong>${money.format(r.ev.total)}</strong><i style="--p:${h(r.ev.total)}"></i><span>EV</span></div>
-    </div><div class="axis"></div>`;
+      <div class="bar gas"><strong>${money.format(r.ice.total)}</strong><i style="--p:${h(r.ice.total)}"></i></div>
+      <div class="bar ev"><strong>${money.format(r.ev.total)}</strong><i style="--p:${h(r.ev.total)}"></i></div>
+    </div><div class="axis"></div>
+    <div class="bar-names"><span>${gasLabel(input.cars.length)}</span><span>EV</span></div>`;
 }
 
 function breakdownTable(r, years) {
@@ -99,15 +101,15 @@ function breakdownTable(r, years) {
   const total = `<tr class="total"><th scope="row">Total</th><td class="${tone(r.savings)}">${signed(r.savings)}</td></tr>`;
   const lease = r.leaseTerms.ev > 1
     ? `<p class="note">Your ownership period is longer than one lease, so this counts ${r.leaseTerms.ev} back-to-back leases.</p>` : '';
-  return `<table><caption>Where the ${years}-year difference comes from. Positive means the EV saves you money.</caption>
+  return `<table><caption>Difference by source over ${yearsText(years)}. Positive means the EV saves money.</caption>
     <tbody>${rows}${total}</tbody></table>${lease}`;
 }
 
 function monthlyBudget(r, years) {
   const months = years * 12;
   return `<div class="monthly">
-      <div class="gas"><span class="l">Your monthly auto budget now</span><strong>${money.format(r.ice.total / months)}</strong></div>
-      <div class="ev"><span class="l">Your monthly auto budget with an EV</span><strong>${money.format(r.ev.total / months)}</strong></div>
+      <div class="gas"><strong>${money.format(r.ice.total / months)}</strong><span class="l">Your monthly auto budget now</span></div>
+      <div class="ev"><strong>${money.format(r.ev.total / months)}</strong><span class="l">Your monthly auto budget with an EV</span></div>
     </div>
     <p class="note">Total cost over ${yearsText(years)}, divided by the months, with everything above counted.</p>`;
 }
@@ -153,7 +155,7 @@ export function renderResult(resultEl, workingEl, r, input) {
 export function renderErrors(resultEl, workingEl, errors) {
   const shown = errors.slice(0, ERRORS_SHOWN).map((e) => `<li>${e.message}</li>`).join('');
   const more = errors.length > ERRORS_SHOWN ? `<li>And ${errors.length - ERRORS_SHOWN} more.</li>` : '';
-  resultEl.innerHTML = `<h2 class="headline display">Missing information</h2>
+  resultEl.innerHTML = `<h2 class="headline empty display">Missing information</h2>
     <p class="sub">The result appears once these are filled in.</p>
     <ul class="todo">${shown}${more}</ul>`;
   // stay put while typing in it, or clearing a box would drop focus
