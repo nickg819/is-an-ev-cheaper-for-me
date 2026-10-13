@@ -28,7 +28,7 @@ const buyPanel = (p) => `
     ${input(`${p}_down`, 'Down payment', { unit: '$' })}
     ${input(`${p}_apr`, 'Loan APR', { unit: '%' })}
     ${input(`${p}_loanMonths`, 'Loan length', { unit: 'months' })}
-    ${input(`${p}_resale`, 'Resale value', { unit: '$' })}
+    ${input(`${p}_resale`, 'Resale value', { unit: '$', hint: 'Enter 0 if you plan to keep the car for its full life.' })}
     ${input(`${p}_incentives`, 'Incentives', { unit: '$' })}
     <p class="note">Sales tax is a percent, like 9.25. Fees are title, registration and dealer fees. If you're paying cash, enter the full price plus tax and fees as the down payment.</p>
   </div>`;
